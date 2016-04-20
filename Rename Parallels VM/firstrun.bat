@@ -1,0 +1,1 @@
+powershell.exe -executionpolicy unrestricted -file C:\Users\Public\RenameVMfromMAC.ps1
