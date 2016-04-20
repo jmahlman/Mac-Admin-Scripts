@@ -9,7 +9,7 @@ Note that I've never written PowerShells scripts before, this is my first.
 0. Create a VM with your users: Admin and Standard, log into both so initial creation is complete already
 	0. Make sure the VM has access to the mac folder ~/Public, this is where "getHostname.sh" drops the hostname file, you can change it if you want, but you also have to change the PowerShell script
 	0. Set the windows administrator account to auto-login (You need admin privileges)
-	0. Drop "firstrun.bat" and "RenameVMfromMAC.ps1" in "C:/Users/Public/"
+	0. Drop "firstrun.bat", "autoLogin.bat", and "RenameVMfromMAC.ps1" into "C:/Users/Public/"
 	0. When you are completely updated and ready to roll in Windows, run the "FirstRun.reg" file.  This creates a RunOnce object in the registry that will run the "firstrun.bat" file on the next reboot
 	0. Shutdown the VM
 0. Package your VM and parallels however you prefer and upload to your JSS along with "getHostname.sh"
