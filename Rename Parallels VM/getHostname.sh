@@ -10,5 +10,6 @@
 if [ ! -d /Users/Shared ]; then
   mkdir /Users/Shared
 fi
-scutil --get LocalHostName > /Users/Shared/hostname
+localName='scutil --get LocalHostName'
+$localName | head -c 12 > /Users/Shared/hostname
 chmod 777 /Users/Shared/hostname
