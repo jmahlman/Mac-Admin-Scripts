@@ -4,7 +4,7 @@
 # 2/10/2016
 #
 # This script uses CocoaDialog to show which updates are available for Adobe CC and asks
-# if they would like to ionstall those updates.  If they choose to install those updates it will
+# if they would like to install those updates.  If they choose to install updates it will
 # show a progress bar to the user and begin installing updates. The pregress bar doesn't change, 
 # it's only there to show the user that something is actucally happening.  
 #
@@ -25,15 +25,15 @@ rum=/usr/local/bin/RemoteUpdateManager # post-10.11
 
 installUpdates ()
 {
-	# the code in here was borrowed from the cocoaDialog website. I eventually want the progress bag to actually MOVE
+	# the code in here was borrowed from the cocoaDialog website. I eventually want the progress bar to show progress
 	
 	# create a named pipe
 	rm -f /tmp/hpipe
 	mkfifo /tmp/hpipe
 
 	# create a background job which takes its input from the named pipe
-	$CocoaDialog progressbar --indeterminate --float --icon-file "$icons/Sync.icns" --title "Adobe Updates" --text "Installing Updates..." \
-		--width "500" --height "115" < /tmp/hpipe &
+	$CocoaDialog progressbar --indeterminate --float --icon-file "$icons/Sync.icns" \
+		--title "Adobe Updates" --text "Installing Updates..." --width "500" --height "115" < /tmp/hpipe &
 
 	# associate file descriptor 3 with that pipe and send a character through the pipe
 	exec 3<> /tmp/hpipe
@@ -81,18 +81,19 @@ fi
 #run RUM and output to the log file
 touch $rumlog
 $rum --action=list > $rumlog
-secho=`sed -n '/Adobe*/,/\*/p' $rumlog  # super-echo!  Echo pretty-ish output to user.  I removed sed because I'm bad at scripting :)
+secho=`sed -n '/Adobe*/,/\*/p' $rumlog # super-echo!  Echo pretty-ish output to user. 
 
 if [ "$(grep "Following Updates are applicable" $rumlog)" == "Following Updates are applicable on the system :" ] ; then
-	rv=`$CocoaDialog yesno-msgbox --float --icon-file "$icons/ToolbarInfo.icns" --no-cancel --title "Adobe Updates" --text "Do you want to install the following updates?" \
-		--informative-text "$secho"`
+	rv=`$CocoaDialog yesno-msgbox --float --icon-file "$icons/ToolbarInfo.icns" --no-cancel \
+		--title "Adobe Updates" --text "Do you want to install the following updates?" --informative-text "$secho"`
 	if [ "$rv" == "1" ]; then 
 		installUpdates
 	elif [ "$rv" == "2" ]; then
 		exit 0
 	fi
 else
-	$CocoaDialog ok-msgbox --float --no-cancel --icon-file "$icons/ToolbarInfo.icns" --title "Adobe Updates" --text "There are no Adobe Updates available."
+	$CocoaDialog ok-msgbox --float --no-cancel --icon-file "$icons/ToolbarInfo.icns" \
+		--title "Adobe Updates" --text "There are no Adobe Updates available."
 	if [ "$rv" == "1" ]; then 
 		exit 0
 	fi
