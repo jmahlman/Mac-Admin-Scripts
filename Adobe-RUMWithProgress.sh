@@ -81,7 +81,7 @@ fi
 #run RUM and output to the log file
 touch $rumlog
 $rum --action=list > $rumlog
-secho=`sed -n '/Adobe*/,/\*/p' $rumlog #| sed 's/[(\)/\t]//g'`  # super-echo!  Echo pretty-ish output to user.  I removed sed because I'm bad at scripting :)
+secho=`sed -n '/Adobe*/,/\*/p' $rumlog  # super-echo!  Echo pretty-ish output to user.  I removed sed because I'm bad at scripting :)
 
 if [ "$(grep "Following Updates are applicable" $rumlog)" == "Following Updates are applicable on the system :" ] ; then
 	rv=`$CocoaDialog yesno-msgbox --float --icon-file "$icons/ToolbarInfo.icns" --no-cancel --title "Adobe Updates" --text "Do you want to install the following updates?" \
