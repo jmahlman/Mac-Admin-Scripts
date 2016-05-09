@@ -1,14 +1,14 @@
 #!/bin/sh
 #
 ########################################################################
-# Original created By: Colin Bohn, Stanwood-Camano School District
+# Original created By: Colin Bohn, Stanwood-Camano School District (cbohn@scsd.ac)
 # 
 # Customized by John Mahlman, University of the Arts Philadelphia
 # Last Updated May 6, 2016
 #
 # Name: DockMaster
-# Purpose: Set the contents of the dock on login based on
-# cohort and what applications are available on the local machine.
+# Purpose: Set the contents of the dock on login based on computer type (cohort) 
+# and what applications are available on the local machine.
 ########################################################################
 
 
@@ -59,7 +59,7 @@ officeIcons ()
 {
 	wordversion=$(/usr/bin/mdls -name kMDItemVersion "/Applications/Microsoft Word.app/")
 	# Checking for Office 2016
-	if [[ $wordversion  == *" 15."* ]]; then
+	if [[ $wordversion == *" 15."* ]]; then
 		echo "Adding Office 2016 apps"
 		$du --add "/Applications/Microsoft Word.app" --no-restart /Users/$user
 		$du --add "/Applications/Microsoft Excel.app" --no-restart /Users/$user
