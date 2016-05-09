@@ -84,13 +84,7 @@ echo "Removing all items from the dock"
 $du --remove all --no-restart /Users/$user
 
 #######################################
-#### Everyone likes a Downloads folder
-#######################################
-echo "Adding the Downloads folder"
-$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
-
-#######################################
-#### Add universal apps
+#### Add universal icons
 #### This runs for all cohorts
 #######################################
 echo "Adding browsers"
@@ -125,8 +119,10 @@ if [ $cohort == "FACSTAFF" ]; then
 	$du --add "/Applications/App Store.app" --no-restart /Users/$user
 	$du --add "/Applications/System Preferences.app" --position end --no-restart /Users/$user
 	# This should be the end of the applications in the dock, anything after should be a folder
+	$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
 	$du --add "/Applications" --view grid --display folder --sort name --no-restart /Users/$user
 	$du --add "~/Documents" --view fan --display stack --sort dateadded --no-restart /Users/$user
+	
 fi
 
 #######################################
@@ -143,6 +139,7 @@ if [ $cohort == "OFFICE" ]; then
 	$du --add "/Applications/Self Service.app" --no-restart /Users/$user
 	$du --add "/Applications/System Preferences.app" --position end --no-restart /Users/$user
 	# This should be the end of the applications in the dock, anything after should be a folder
+	$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
 	$du --add "/Applications" --view grid --display folder --sort name --no-restart /Users/$user
 fi
 
