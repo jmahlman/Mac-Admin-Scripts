@@ -6,8 +6,10 @@
 # Login script for copying and editing Ableton Live database files to match new users
 # $3 is current username as defined by Casper Suite.  Obviously this can be changed to $USER is you want to use this standalone
 # 
-# NOTE: This script actually edits the db file!  I have not seen any issues doing this
-# but I will not guarantee that it will not cause instability or corruption.
+# NOTE: This script actually edits the db file!  
+#
+# HEY GUESS WHAT?  THIS DOESN'T ACTUALLY WORK.  WELL, THE SCRIPT WORKS FINE BUT ABLETON WILL STILL RE-INDEX UNLESS YOU GET LUCKY.
+# SO...THIS SCRIPT IS KINDA USELESS.  BUT I'LL STILL KEEP IT AROUND..MAYBE I CAN FIGURE OUT HOW TO ACTUALLY EDIT THE DB FILE PROPERLY.
 #
 #
 #############
