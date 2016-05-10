@@ -1,9 +1,12 @@
 #!/bin/sh
 #
-# Written by John Mahlman
-# 5/4/2016
 #
-# Login script for copying and editing Ableton Live database files to match new users
+# Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
+# Last Updated: 5/10/16
+#
+# Name: login-ableton_db
+#
+# Purpose: Login script for copying and editing Ableton Live database files to match new users
 # $3 is current username as defined by Casper Suite.  Obviously this can be changed to $USER is you want to use this standalone
 # 
 # NOTE: This script actually edits the db file!  
@@ -12,9 +15,6 @@
 # SO...THIS SCRIPT IS KINDA USELESS.  BUT I'LL STILL KEEP IT AROUND..MAYBE I CAN FIGURE OUT HOW TO ACTUALLY EDIT THE DB FILE PROPERLY.
 #
 #
-#############
-# Variables #
-#############
 db='/Users/Shared/Database'
 
 ##########

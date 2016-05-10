@@ -1,17 +1,17 @@
 #!/bin/sh
 #
-# Written by John Mahlman
-# 2/10/2016
 #
-# This script uses CocoaDialog to show which updates are available for Adobe CC and asks
+# Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
+# Last Updated: 5/10/16
+#
+# Name: Adobe-RUMWithProgress
+#
+# Purpose: This script uses CocoaDialog to show which updates are available for Adobe CC and asks
 # if they would like to install those updates.  If they choose to install updates it will
 # show a progress bar to the user and begin installing updates. The pregress bar doesn't change, 
 # it's only there to show the user that something is actucally happening.  
 #
 #
-#############
-# Variables #
-#############
 icons=/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources
 rumlog=/var/tmp/RUMupdate.log # mmmmmm, rum log
 CD_APP=/Applications/Utilities/CocoaDialog.app/
@@ -85,7 +85,6 @@ fi
 if [ -f $rumlog ] ; then
 	rm $rumlog
 fi
-
 
 #run RUM and output to the log file
 touch $rumlog

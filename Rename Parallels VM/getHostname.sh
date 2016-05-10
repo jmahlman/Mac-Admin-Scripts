@@ -1,15 +1,22 @@
 #!/bin/sh
 #
 #
-# I wrote this simple script because we wanted to rename our Parallels VMs to the local Mac hostname
-# We set the VM to automatically log into an admin account and run a powershell script to get the name
-# from this file and rename the machine.  It then enables autologin for the student account and reboots
+# Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
+# Last Updated: 5/10/16
+#
+# Name: getHostname
+#
+# Purpose: Gets local hostname and drops it into a file.  This was created for a greater purpose:
+# Renaming a Parallels VM automatically.  See more here: https://github.com/jmahlman/uarts-scripts/tree/master/Rename%20Parallels%20VM
 #
 #
-
+localName='scutil --get LocalHostName'
+##########
+# Script #
+##########
 if [ ! -d /Users/Shared ]; then
   mkdir /Users/Shared
 fi
-localName='scutil --get LocalHostName'
+
 $localName | head -c 12 > /Users/Shared/hostname
 chmod 777 /Users/Shared/hostname
