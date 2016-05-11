@@ -2,7 +2,7 @@
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
-# Last Updated: 5/10/16
+# Last Updated: 5/11/16
 #
 # Name: remove-non-local-users
 #
@@ -10,7 +10,7 @@
 # Will spare the 'macadmin' and 'Shared' home directories.
 #
 #
-users=`find /Users -type d -maxdepth 1 | cut -d"/" -f3` 
+users=`find /Users -type d -maxdepth 1 | cut -d"/" -f3`
 # you can edit this to remove only accounts that haven't logged in for x days: add '-mtime +<# of days>' after maxdepth
 
 ##########
