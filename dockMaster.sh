@@ -4,7 +4,7 @@
 # Original created By: Colin Bohn, Stanwood-Camano School District (cbohn@scsd.ac)
 # 
 # Customized by John Mahlman, University of the Arts Philadelphia
-# Last Updated May 9, 2016
+# Last Updated May 11, 2016
 #
 # Name: DockMaster
 # Purpose: Set the contents of the dock on login based on computer type (cohort) 
@@ -49,7 +49,7 @@ if [ -f /Library/JAMF\ DM/Cohort/*.txt ]; then
 	echo "Cohort set to $cohort"
 else
 	echo "No cohort available! Using settings for NO COHORT."
-	cohort=""
+	cohort="NONE"
 fi
 
 #######################################
@@ -94,8 +94,9 @@ if [ -d "/Applications/Google Chrome.app/" ]; then
 	$du --add "/Applications/Google Chrome.app" --no-restart /Users/$user
 fi
 
-if [ -d "/Applications/Firefox-ESR-38.app/" ]; then
-	$du --add "/Applications/Firefox-ESR-38.app" --no-restart /Users/$user
+if [ -d /Applications/Firefox* ]; then
+	firefox=`find /Applications -type d -maxdepth 1 -name Firefox*`
+	$du --add "$firefox" --no-restart /Users/$user
 fi
 
 #######################################
