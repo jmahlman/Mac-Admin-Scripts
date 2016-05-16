@@ -4,7 +4,7 @@
 # Original created By: Colin Bohn, Stanwood-Camano School District (cbohn@scsd.ac)
 # 
 # Customized by John Mahlman, University of the Arts Philadelphia
-# Last Updated May 11, 2016
+# Last Updated May 16, 2016
 #
 # Name: DockMaster
 # Purpose: Set the contents of the dock on login based on computer type (cohort) 
@@ -38,7 +38,7 @@ if [ ! -n "$3" ]; then
 else
 	user=$(/usr/bin/who | /usr/bin/awk '/console/{ print $1 }')
 fi
-
+sleep 5 # we need to wait for the dock to actually start
 echo "Running DockMaster on $user"
 
 #######################################
@@ -82,9 +82,16 @@ officeIcons ()
 #######################################
 echo "Removing all items from the dock"
 $du --remove all --no-restart /Users/$user
+sleep 5 # we need to give this time to work or we'll get errors with "replacing" items instead of adding them.
 
 #######################################
-#### Add universal icons
+#### Everyone likes a Downloads folder
+#######################################
+echo "Adding the Downloads folder"
+$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
+
+#######################################
+#### Add universal apps
 #### This runs for all cohorts
 #######################################
 echo "Adding browsers"
@@ -120,10 +127,8 @@ if [ $cohort == "FACSTAFF" ]; then
 	$du --add "/Applications/App Store.app" --no-restart /Users/$user
 	$du --add "/Applications/System Preferences.app" --position end --no-restart /Users/$user
 	# This should be the end of the applications in the dock, anything after should be a folder
-	$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
 	$du --add "/Applications" --view grid --display folder --sort name --no-restart /Users/$user
 	$du --add "~/Documents" --view fan --display stack --sort dateadded --no-restart /Users/$user
-	
 fi
 
 #######################################
@@ -140,7 +145,6 @@ if [ $cohort == "OFFICE" ]; then
 	$du --add "/Applications/Self Service.app" --no-restart /Users/$user
 	$du --add "/Applications/System Preferences.app" --position end --no-restart /Users/$user
 	# This should be the end of the applications in the dock, anything after should be a folder
-	$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
 	$du --add "/Applications" --view grid --display folder --sort name --no-restart /Users/$user
 fi
 
