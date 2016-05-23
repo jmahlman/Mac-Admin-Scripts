@@ -4,7 +4,7 @@
 # Original created By: Colin Bohn, Stanwood-Camano School District (cbohn@scsd.ac)
 # 
 # Customized by John Mahlman, University of the Arts Philadelphia
-# Last Updated May 1, 2016
+# Last Updated May 23, 2016
 #
 # Name: DockMaster
 # Purpose: Set the contents of the dock on login based on computer type (cohort) 
@@ -53,7 +53,7 @@ else
 fi
 
 #######################################
-#### Office Checker Function
+#### Bundled Apps Checker Function
 #######################################
 officeIcons ()
 {
@@ -74,6 +74,20 @@ officeIcons ()
 			$du --add "/Applications/Microsoft Office 2011/Microsoft Outlook.app" --no-restart /Users/$user
 			$du --add "/Applications/Microsoft Office 2011/Microsoft Powerpoint.app" --no-restart /Users/$user
 		fi
+	fi
+}
+
+iWorkIcons ()
+{
+	echo "Adding installed iWork Apps"
+	if [ -e "/Applications/Pages.app" ]; then
+		$du --add "/Applications/Pages.app" --no-restart /Users/$user
+	fi
+	if [ -e "/Applications/Numbers.app" ]; then
+		$du --add "/Applications/Numbers.app" --no-restart /Users/$user
+	fi
+	if [ -e "/Applications/Keynote.app" ]; then
+		$du --add "/Applications/Keynote.app" --no-restart /Users/$user
 	fi
 }
 
@@ -147,8 +161,13 @@ elif [ $cohort == "OFFICE" ]; then
 #### This one has a lot of different cohorts,
 #### You can break it down as much as you want
 #######################################
-elif [ $cohort == "PUBLIC" ]; then
-	echo "Adding apps for PUBLIC cohort"
+elif [ $cohort == "LAB" ] || [ $cohort == "STUDIO" ] || [ $cohort == "SUITE" ] || [ $cohort == "SMART-CLASSROOM" ]; then
+	echo "Adding apps for $cohort cohort"
+	iWorkIcons
+	$du --add "/Applications/Image Capture.app" --no-restart /Users/$user
+	$du --add "/Applications/Preview.app" --no-restart /Users/$user
+	# This should be the end of the applications in the dock, anything after should be a folder
+	$du --add "/Applications" --view grid --display folder --sort name --no-restart /Users/$user
 
 #######################################
 #### Add dock items for CHECKOUT cohort
