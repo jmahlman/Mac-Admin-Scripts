@@ -2,11 +2,11 @@
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
-# Last Updated: 5/18/16
+# Last Updated: 5/23/16
 #
 # Name: add-office-icons
 #
-# Purpose: Adds office icons to dock using dockutil
+# Purpose: Adds office icons to dock using dockutil after installing Office 2016
 # Also installs dockutil if it's not found
 #
 
@@ -34,10 +34,9 @@ fi
 # Script #
 ##########
 
-# Add dock icons only if the app is installed
+# Add dock icons only if word is installed (this happens after a full install, so if that's installed, they're all installed)
 if [ -e "/Applications/Microsoft Word.app" ]; then
 	echo "Adding Office 2016 apps to dock"
-	sleep 2
 	$du --add "/Applications/Microsoft Word.app" --replacing "Microsoft Word" --no-restart /Users/$user
 	$du --add "/Applications/Microsoft Excel.app" --replacing "Microsoft Excel" --no-restart /Users/$user	
 	$du --add "/Applications/Microsoft Outlook.app" --replacing "Microsoft Outlook" --no-restart /Users/$user	
