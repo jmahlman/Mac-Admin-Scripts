@@ -2,7 +2,7 @@
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
-# Last Updated: 5/23/16
+# Last Updated: 5/27/16
 #
 # Name: add-office-icons
 #
@@ -37,12 +37,13 @@ fi
 # Add dock icons only if word is installed (this happens after a full install, so if that's installed, they're all installed)
 if [ -e "/Applications/Microsoft Word.app" ]; then
 	echo "Adding Office 2016 apps to dock"
+	sleep 3
 	$du --add "/Applications/Microsoft Word.app" --replacing "Microsoft Word" --no-restart /Users/$user
 	$du --add "/Applications/Microsoft Excel.app" --replacing "Microsoft Excel" --no-restart /Users/$user	
 	$du --add "/Applications/Microsoft Outlook.app" --replacing "Microsoft Outlook" --no-restart /Users/$user	
 	$du --add "/Applications/Microsoft Powerpoint.app" --replacing "Microsoft Powerpoint" --no-restart /Users/$user
 	# Restart the dock when done
-	sleep 5
+	sleep 3
 	killall Dock
 	exit 0
 else
