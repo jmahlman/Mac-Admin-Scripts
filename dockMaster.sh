@@ -4,7 +4,7 @@
 # Original created By: Colin Bohn, Stanwood-Camano School District (cbohn@scsd.ac)
 # 
 # Customized by John Mahlman, University of the Arts Philadelphia
-# Last Updated May 23, 2016
+# Last Updated June 6, 2016
 #
 # Name: DockMaster
 # Purpose: Set the contents of the dock on login based on computer type (cohort) 
@@ -57,9 +57,10 @@ fi
 #######################################
 officeIcons ()
 {
-	wordversion=$(/usr/bin/mdls -name kMDItemVersion "/Applications/Microsoft Word.app/") #so, our version shows as NULL so this doesn't work :(
+	wordversion=$(defaults read "/Applications/Microsoft Word.app/Contents/Info.plist" CFBundleShortVersionString)
 	# Checking for Office 2016
-	if [ -e "/Applications/Microsoft Word.app" ]; then
+	sleep 2
+	if [[ $wordversion == "15."* ]]; then
 		echo "Adding Office 2016 apps"
 		$du --add "/Applications/Microsoft Word.app" --no-restart /Users/$user
 		$du --add "/Applications/Microsoft Excel.app" --no-restart /Users/$user
