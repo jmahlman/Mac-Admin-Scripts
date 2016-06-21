@@ -23,3 +23,6 @@ for i in $users; do
         rm -Rf /Users/$i
     fi
 done
+# Remove the student home directory but leave the account at the end.
+rm -Rf /Users/student
+
