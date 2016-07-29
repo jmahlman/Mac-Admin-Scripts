@@ -4,7 +4,7 @@
 # Original created By: Colin Bohn, Stanwood-Camano School District (cbohn@scsd.ac)
 # 
 # Customized by John Mahlman, University of the Arts Philadelphia
-# Last Updated June 6, 2016
+# Last Updated July 19, 2016
 #
 # Name: DockMaster
 # Purpose: Set the contents of the dock on login based on computer type (cohort) 
@@ -53,7 +53,7 @@ else
 fi
 
 #######################################
-#### Bundled Apps Checker Function
+#### Bundled Apps Checker Functions
 #######################################
 officeIcons ()
 {
@@ -103,7 +103,6 @@ sleep 2 # we need to give this time to work or we'll get errors with "replacing"
 #### Items for all/no cohorts
 #######################################
 echo "Adding browsers"
-
 $du --add "/Applications/Safari.app" --no-restart /Users/$user
 if [ -e "/Applications/Google Chrome.app/" ]; then
 	$du --add "/Applications/Google Chrome.app" --no-restart /Users/$user
