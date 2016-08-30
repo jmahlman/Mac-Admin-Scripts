@@ -2,15 +2,16 @@
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
-# Last Updated: 7/6/16
+# Last Updated: 8/29/16 (renamed script internally)
 #
-# Name: add-to-static-group
+# Name: autoAddStaticGroup
 #
 # Purpose: Will add machines to static groups based on the machine name
 # Note: If your group names have spaces you have to use '%20' in their place.
 #
 
 # Get the JSS URL from the Mac's jamf plist file
+
 if [ -e "/Library/Preferences/com.jamfsoftware.jamf.plist" ]; then
 	jssURL=$(defaults read /Library/Preferences/com.jamfsoftware.jamf.plist jss_url)
 else
