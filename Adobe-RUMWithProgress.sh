@@ -2,7 +2,7 @@
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
-# Last Updated: 8/30/16
+# Last Updated: 9/12/16
 #
 # Name: Adobe-RUMWithProgress
 #
@@ -89,7 +89,7 @@ fi
 #run RUM and output to the log file
 touch $rumlog
 $rum --action=list > $rumlog
-secho=`sed -n '/Following*/,/\*/p' $rumlog # super-echo!  Echo pretty-ish output to user. 
+secho=`sed -n '/Following*/,/\*/p' $rumlog` # super-echo!  Echo pretty-ish output to user. 
 
 if [ "$(grep "Following Updates are applicable" $rumlog)" == "Following Updates are applicable on the system :" ] ; then
 	rv=`$CocoaDialog yesno-msgbox --float --icon-file "$icons/ToolbarInfo.icns" --no-cancel \
