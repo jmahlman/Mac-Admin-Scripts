@@ -4,7 +4,7 @@
 # Original created By: Colin Bohn, Stanwood-Camano School District (cbohn@scsd.ac)
 # 
 # Customized by John Mahlman, University of the Arts Philadelphia
-# Last Updated July 19, 2016
+# Last Updated 9/15/16: Removed network connect since we don't use it anymore
 #
 # Name: DockMaster
 # Purpose: Set the contents of the dock on login based on computer type (cohort) 
@@ -131,9 +131,6 @@ if [ $cohort == "FACSTAFF" ]; then
 	if [ -e "/Library/KeyAccess/KeyCheckout.app/" ]; then
 		$du --add "/Library/KeyAccess/KeyCheckout.app" --no-restart /Users/$user
 	fi
-	if [ -e "/Applications/Network Connect.app/" ]; then
-		$du --add "/Applications/Network Connect.app" --no-restart /Users/$user
-	fi
 	$du --add "/Applications/Self Service.app" --no-restart /Users/$user
 	$du --add "/Applications/App Store.app" --no-restart /Users/$user
 	$du --add "/Applications/System Preferences.app" --position end --no-restart /Users/$user
@@ -181,9 +178,6 @@ elif [ $cohort == "CHECKOUT" ]; then
 	$du --add "/Applications/Time Machine.app" --no-restart /Users/$user
 	if [ -e "/Library/KeyAccess/KeyCheckout.app/" ]; then
 		$du --add "/Library/KeyAccess/KeyCheckout.app" --no-restart /Users/$user
-	fi
-	if [ -e "/Applications/Network Connect.app/" ]; then
-		$du --add "/Applications/Network Connect.app" --no-restart /Users/$user
 	fi
 	$du --add "/Applications/Self Service.app" --no-restart /Users/$user
 	$du --add "/Applications/App Store.app" --no-restart /Users/$user
