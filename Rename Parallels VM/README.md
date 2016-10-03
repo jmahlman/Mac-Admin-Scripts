@@ -7,7 +7,7 @@ Note that I've never written PowerShells scripts before, this is my first.
 # Usage
 
 0. Create a VM with your users: Admin and Standard, log into both so initial creation is complete already
-	0. Make sure the VM has access to the mac folder ~/Public, this is where "getHostname.sh" drops the hostname file, you can change it if you want, but you also have to change the PowerShell script
+	0. Make sure the VM has access to the mac folder /Users/Shared/, this is where "getHostname.sh" drops the hostname file, you can change it if you want, but you also have to change the PowerShell script
 	0. Set the windows administrator account to auto-login (You need admin privileges)
 	0. Drop "firstrun.bat", "autoLogin.bat", and "RenameVMfromMAC.ps1" into "C:/Users/Public/"
 	0. When you are completely updated and ready to roll in Windows, run the "FirstRun.reg" file.  This creates a RunOnce object in the registry that will run the "firstrun.bat" file on the next reboot
