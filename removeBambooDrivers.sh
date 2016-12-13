@@ -1,6 +1,12 @@
 #!/bin/sh
-
-# Remove the Wacom Bamboo drivers if installed
+#
+#
+# Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
+# Last Updated: 12/13/16
+#
+# Name: removeBambooDrivers.sh
+#
+# Purpose: Remove the Wacom Bamboo drivers if installed
 
 bambooApp="/Applications/Pen Tablet.localized/Pen Tablet Utility.app"
 
