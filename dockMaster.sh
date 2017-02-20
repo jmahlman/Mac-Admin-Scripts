@@ -1,39 +1,43 @@
 #!/bin/sh
 #
-########################################################################
-# Original created By: Colin Bohn, Stanwood-Camano School District (cbohn@scsd.ac)
-# 
-# Customized by John Mahlman, University of the Arts Philadelphia
-# Last Updated 9/15/16: Removed network connect since we don't use it anymore
 #
-# Name: DockMaster
+# Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
+# Name: DockMaster.sh
+#
 # Purpose: Set the contents of the dock on login based on computer type (cohort) 
 # and what applications are available on the local machine.
-########################################################################
+#
+# Changelog
+# 2/20/17:  - Replaced the sleep 5 on line 16 with the wait loop.
+#			- Cleaned up script to make it in line with my styling.
+#			- I removed the "originally created by" in the header, this is 
+#			  so customized that it no longer has any part of the original in it.
+#			- ALL of the comments!
+#
+# 9/15/16:  - Removed network connect since we don't use it anymore.
+#
+#
 
-sleep 5 # we need to wait for the dock to actually start
+# we need to wait for the dock to actually start 
+until [[ $(pgrep Dock) ]]; do
+    wait
+done
 
-#######################################
-#### Where's our JAMF binary?
-#######################################
+# Find the JAMF binary
 jamfbinary=$(/usr/bin/which jamf)
 
-#######################################
-##### Lets make sure we have DockUtil
-#######################################
+# Chesk to see if we have dockutil installed, install if not
 if [ ! -f "/usr/local/bin/dockutil" ]; then
 	echo "Installing DockUtil from JSS"
 	"$jamfbinary" policy -event dockutil
-	if [ ! -f "/usr/local/bin/dockutil" ]; then
+	if [ ! -f "/usr/local/bin/dockutil" ]; then # Did the install work?
 		echo "Unable to install DockUtil, aborting!"
 		exit 1
 	fi
 fi
 du="/usr/local/bin/dockutil"
 
-#######################################
-##### Find out who we are modifying
-#######################################
+# Get the current logged in user that we'll be modifying
 if [ ! -n "$3" ]; then
 	user=$3
 else
@@ -41,24 +45,20 @@ else
 fi
 echo "Running DockMaster on $user"
 
-#######################################
-##### Let's find that cohort...
-#######################################
+# FInd out the type of machine using our COHORT receipt
 if [ -f /Library/JAMF\ DM/Cohort/*.txt ]; then
 	cohort=$(cat /Library/JAMF\ DM/Cohort/*.txt)
 	echo "Cohort set to $cohort"
 else
-	echo "No cohort available! Adding default icons cohort"
+	echo "No cohort available. Adding default icons only."
 	cohort="NONE"
 fi
 
-#######################################
-#### Bundled Apps Checker Functions
-#######################################
+# Bundled apps checker functions
 officeIcons ()
 {
 	wordversion=$(defaults read "/Applications/Microsoft Word.app/Contents/Info.plist" CFBundleShortVersionString)
-	# Checking for Office 2016
+	# Checking for Word/Office 2016
 	sleep 2
 	if [[ $wordversion == "15."* ]]; then
 		echo "Adding Office 2016 apps"
@@ -90,14 +90,17 @@ iWorkIcons ()
 	if [ -e "/Applications/Keynote.app" ]; then
 		$du --add "/Applications/Keynote.app" --no-restart /Users/$user
 	fi
+	# We check for every app here one by one because they're installed separately,
+	# we don't do this for office because that's a single package that gets laid.
 }
 
-#######################################
-#### Get a clean slate going here
-#######################################
+# Clear the default dock
 echo "Removing all items from the dock"
 $du --remove all --no-restart /Users/$user
-sleep 2 # we need to give this time to work or we'll get errors with "replacing" items instead of adding them.
+sleep 2 # we need to give this time to work or we'll get errors with "replacing" items instead of adding them
+
+
+### The next secion is where you'll want to add your dock items based on computer type/COHORT ###
 
 #######################################
 #### Items for all/no cohorts
@@ -156,7 +159,7 @@ elif [ $cohort == "OFFICE" ]; then
 #######################################
 #### Add dock items for PUBLIC cohorts
 #### This one has a lot of different cohorts,
-#### You can break it down as much as you want
+#### You can break it down as much as you want of course
 #######################################
 elif [ $cohort == "LAB" ] || [ $cohort == "STUDIO" ] || [ $cohort == "SUITE" ] || [ $cohort == "SMART-CLASSROOM" ]; then
 	echo "Adding apps for $cohort cohort"
