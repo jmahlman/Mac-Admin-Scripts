@@ -2,8 +2,6 @@
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
-# Last Updated: 9/12/16
-#
 # Name: Adobe-RUMWithProgress
 #
 # Purpose: This script uses CocoaDialog to show which updates are available for Adobe CC and asks
@@ -11,7 +9,11 @@
 # show a progress bar to the user and begin installing updates. The pregress bar doesn't change, 
 # it's only there to show the user that something is actucally happening.  
 #
+# Changelog
+# 2/21/17: - Cleaned up script to make it in line with my styling.
 #
+#
+
 icons=/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources
 rumlog=/var/tmp/RUMupdate.log # mmmmmm, rum log
 CD_APP=/Applications/Utilities/CocoaDialog.app/
@@ -19,10 +21,7 @@ CocoaDialog="$CD_APP/Contents/MacOS/CocoaDialog"
 oldRUM=/usr/sbin/RemoteUpdateManager # this is where RUM used to live pre-10.11
 rum=/usr/local/bin/RemoteUpdateManager # post-10.11
 
-#############
-# Functions #
-#############
-
+# Installer function
 installUpdates ()
 {
 	# the code in here was borrowed from the cocoaDialog website. I eventually want the progress bar to show progress
@@ -33,7 +32,7 @@ installUpdates ()
 
 	# create a background job which takes its input from the named pipe
 	$CocoaDialog progressbar --indeterminate --float --icon-file "$icons/Sync.icns" \
-		--title "Adobe Updates" --text "Installing Updates..." --width "500" --height "115" < /tmp/hpipe &
+		--title "Adobe Updates" --text "Installing Updates, this may take some time..." --width "500" --height "115" < /tmp/hpipe &
 
 	# associate file descriptor 3 with that pipe and send a character through the pipe
 	exec 3<> /tmp/hpipe
