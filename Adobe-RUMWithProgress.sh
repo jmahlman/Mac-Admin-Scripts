@@ -10,7 +10,9 @@
 # it's only there to show the user that something is actucally happening.  
 #
 # Changelog
-# 2/21/17: - Cleaned up script to make it in line with my styling.
+#
+# 3/23/17 - Added more to "super-echo" to make it nicer for the user to read what's available for updates
+# 2/21/17 - Cleaned up script to make it in line with my styling.
 #
 #
 
@@ -32,7 +34,8 @@ installUpdates ()
 
 	# create a background job which takes its input from the named pipe
 	$CocoaDialog progressbar --indeterminate --float --icon-file "$icons/Sync.icns" \
-		--title "Adobe Updates" --text "Installing Updates, this may take some time..." --width "500" --height "115" < /tmp/hpipe &
+		--title "UArts Adobe Updater" --text "Downloading and Installing Updates, this may take some time..." \ 
+	--width "500" --height "115" < /tmp/hpipe &
 
 	# associate file descriptor 3 with that pipe and send a character through the pipe
 	exec 3<> /tmp/hpipe
@@ -88,11 +91,32 @@ fi
 #run RUM and output to the log file
 touch $rumlog
 $rum --action=list > $rumlog
-secho=`sed -n '/Following*/,/\*/p' $rumlog` # super-echo!  Echo pretty-ish output to user. 
 
+# super-echo!  Echo pretty-ish output to user. Replaces Adobes channel IDs with actual app names
+# I think it's silly that I have to do this, but whatever. :)
+secho=`sed -n '/Following*/,/\*/p' $rumlog \
+	| sed 's/Following/The\ Following/g' \
+	| sed 's/ACR/Acrobat/g' \
+	| sed 's/AEFT/After\ Effects/g' \
+	| sed 's/AME/Media\ Encoder/g' \
+	| sed 's/AUDT/Audition/g' \
+	| sed 's/FLPR/Animate/g' \
+	| sed 's/ILST/Illustrator/g' \
+	| sed 's/MUSE/Muse/g' \
+	| sed 's/PHSP/Photoshop/g' \
+	| sed 's/PRLD/Prelude/g' \
+	| sed 's/SPRK/Experience\ Design\ Beta/g' \
+	| sed 's/KBRG/Bridge/g' \
+	| sed 's/AICY/InCopy/g' \
+	| sed 's/ANMLBETA/Character\ Animator\ Beta/g' \
+	| sed 's/DRWM/Dreamweaver/g' \
+	| sed 's/IDSN/InDesign/g' \
+	| sed 's/PPRO/Premiere\ Pro/g' \
+	| sed 's/ESHR/Project\ Felix/g' `
+		
 if [ "$(grep "Following Updates are applicable" $rumlog)" == "Following Updates are applicable on the system :" ] ; then
 	rv=`$CocoaDialog yesno-msgbox --float --icon-file "$icons/ToolbarInfo.icns" --no-cancel \
-		--title "Adobe Updates" --text "Do you want to install the following updates?" --informative-text "$secho"`
+		--title "UArts Adobe Updater" --text "Do you want to install the following updates?" --informative-text "$secho"`
 	if [ "$rv" == "1" ]; then 
 		installUpdates
 	elif [ "$rv" == "2" ]; then
@@ -100,7 +124,7 @@ if [ "$(grep "Following Updates are applicable" $rumlog)" == "Following Updates 
 	fi
 else
 	$CocoaDialog ok-msgbox --float --no-cancel --icon-file "$icons/ToolbarInfo.icns" \
-		--title "Adobe Updates" --text "There are no Adobe Updates available."
+		--title "UArts Adobe Updater" --text "There are no Adobe Updates available."
 	if [ "$rv" == "1" ]; then 
 		exit 0
 	fi
