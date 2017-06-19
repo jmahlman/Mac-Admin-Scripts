@@ -12,7 +12,7 @@
 # Changelog
 #
 # 6/19/17 - Removed the "wait" command at the end because it was just causing things to hang
-#					- Added some wait 0.2 lines to allow the script some time to catch up
+#					- Added some sleep 0.2 lines to allow the script some time to catch up
 #					- Fixed Dreamweaver channel ID
 #					- Added jamf_bin to determine which jamf binary to use
 # 3/23/17 - Added more to "super-echo" to make it nicer for the user to read what's available for updates
