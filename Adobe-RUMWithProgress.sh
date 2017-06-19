@@ -65,7 +65,7 @@ installUpdates ()
 # does CocoaDialog Exist?
 if [ ! -f $CocoaDialog ] ; then
 	echo "Installing Cocoa Dialog from JSS"
-	jamf_bin policy -event installcocoaDialog
+	$jamf_bin policy -event installcocoaDialog
 	if [ ! -f $CocoaDialog ] ; then
 		echo "Couldn't install Cocoa Dialog! Exiting."
 		exit 1
@@ -80,7 +80,7 @@ fi
 # new/current RUM installed?
 if [ ! -f $rum ] ; then
 	echo "Installing RUM from JSS"
-	jamf_bin policy -event installRUM
+	$jamf_bin policy -event installRUM
 	if [ ! -f $rum ] ; then
 		echo "Couldn't install RUM! Exiting."
 		exit 1
