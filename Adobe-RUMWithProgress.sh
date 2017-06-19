@@ -34,14 +34,14 @@ installUpdates ()
 	# create a named pipe
 	rm -f /tmp/hpipe
 	mkfifo /tmp/hpipe
-	wait 0.2
+	sleep 0.2
 
 	# create a background job which takes its input from the named pipe
 	$CocoaDialog progressbar --indeterminate --float --icon-file "$icons/Sync.icns" \
 		--title "UArts Adobe Updater" --text "Downloading and Installing Updates, this may take some time..." \
 	--width "500" --height "115" < /tmp/hpipe &
 
-	wait 0.2
+	sleep 0.2
 	# associate file descriptor 3 with that pipe and send a character through the pipe
 	exec 3<> /tmp/hpipe
 
@@ -65,7 +65,7 @@ installUpdates ()
 # does CocoaDialog Exist?
 if [ ! -f $CocoaDialog ] ; then
 	echo "Installing Cocoa Dialog from JSS"
-	jamf_bin policy -event installcocoaDialog
+	$jamf_bin policy -event installcocoaDialog
 	if [ ! -f $CocoaDialog ] ; then
 		echo "Couldn't install Cocoa Dialog! Exiting."
 		exit 1
@@ -80,7 +80,7 @@ fi
 # new/current RUM installed?
 if [ ! -f $rum ] ; then
 	echo "Installing RUM from JSS"
-	jamf_bin policy -event installRUM
+	$jamf_bin policy -event installRUM
 	if [ ! -f $rum ] ; then
 		echo "Couldn't install RUM! Exiting."
 		exit 1
