@@ -4,13 +4,14 @@
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
 # Name: DockMaster.sh
 #
-# Purpose: Set the contents of the dock on login based on computer type (cohort) 
+# Purpose: Set the contents of the dock on login based on computer type (cohort)
 # and what applications are available on the local machine.
 #
 # Changelog
+# 7/26/17:  - Fixed a typo with powerpoint
 # 2/20/17:  - Replaced the sleep 5 on line 16 with the wait loop.
 #			- Cleaned up script to make it in line with my styling.
-#			- I removed the "originally created by" in the header, this is 
+#			- I removed the "originally created by" in the header, this is
 #			  so customized that it no longer has any part of the original in it.
 #			- ALL of the comments!
 #
@@ -18,7 +19,7 @@
 #
 #
 
-# we need to wait for the dock to actually start 
+# we need to wait for the dock to actually start
 until [[ $(pgrep Dock) ]]; do
     wait
 done
@@ -65,7 +66,7 @@ officeIcons ()
 		$du --add "/Applications/Microsoft Word.app" --no-restart /Users/$user
 		$du --add "/Applications/Microsoft Excel.app" --no-restart /Users/$user
 		$du --add "/Applications/Microsoft Outlook.app" --no-restart /Users/$user
-		$du --add "/Applications/Microsoft Powerpoint.app" --no-restart /Users/$user
+		$du --add "/Applications/Microsoft PowerPoint.app" --no-restart /Users/$user
 	else
 		# Checking for Office 2011
 		if [ -d "/Applications/Microsoft Office 2011/" ]; then
@@ -73,7 +74,7 @@ officeIcons ()
 			$du --add "/Applications/Microsoft Office 2011/Microsoft Word.app" --no-restart /Users/$user
 			$du --add "/Applications/Microsoft Office 2011/Microsoft Excel.app" --no-restart /Users/$user
 			$du --add "/Applications/Microsoft Office 2011/Microsoft Outlook.app" --no-restart /Users/$user
-			$du --add "/Applications/Microsoft Office 2011/Microsoft Powerpoint.app" --no-restart /Users/$user
+			$du --add "/Applications/Microsoft Office 2011/Microsoft PowerPoint.app" --no-restart /Users/$user
 		fi
 	fi
 }
@@ -119,7 +120,7 @@ fi
 officeIcons
 # Every user gets a downloads folder too
 echo "Adding the Downloads folder"
-$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user	
+$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
 
 #######################################
 #### Add dock items for FACSTAFF cohort
@@ -150,7 +151,7 @@ elif [ $cohort == "OFFICE" ]; then
 	$du --add "/Applications/Contacts.app" --no-restart /Users/$user
 	$du --add "/Applications/Calendar.app" --no-restart /Users/$user
 	$du --add "/Applications/Notes.app" --no-restart /Users/$user
-	$du --add "/Applications/Messages.app" --no-restart /Users/$user	
+	$du --add "/Applications/Messages.app" --no-restart /Users/$user
 	$du --add "/Applications/Self Service.app" --no-restart /Users/$user
 	$du --add "/Applications/System Preferences.app" --position end --no-restart /Users/$user
 	# This should be the end of the applications in the dock, anything after should be a folder
