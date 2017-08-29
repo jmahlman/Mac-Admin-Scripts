@@ -11,8 +11,9 @@
 #
 # Changelog
 #
+# 8/29/17 - Added a "caffeinate" command when installing updates to stop systems from sleeping during long installs
 # 6/19/17 - Removed the "wait" command at the end because it was just causing things to hang
-#					- Added some sleep 0.2 lines to allow the script some time to catch up
+#					t- Added some sleep 0.2 lines to allow the script some time to catch up
 #					- Fixed Dreamweaver channel ID
 #					- Added jamf_bin to determine which jamf binary to use
 # 3/23/17 - Added more to "super-echo" to make it nicer for the user to read what's available for updates
@@ -31,6 +32,10 @@ jamf_bin=$(/usr/bin/which jamf)
 # Installer function
 installUpdates ()
 {
+	# Let's caffinate the mac because this can take long
+	caffeinate -d -i -m -u &
+	caffeinatepid=$!
+
 	# create a named pipe
 	rm -f /tmp/hpipe
 	mkfifo /tmp/hpipe
@@ -53,6 +58,9 @@ installUpdates ()
 	# now turn off the progress bar by closing file descriptor 3
 	exec 3>&-
 	rm -f /tmp/hpipe
+
+	# No more caffeine please. I've a headache.
+	kill "$caffeinatepid"
 
 	exit 0
 }
