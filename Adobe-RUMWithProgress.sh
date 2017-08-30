@@ -11,9 +11,10 @@
 #
 # Changelog
 #
+# 8/31/17 - Just some cleaning up
 # 8/29/17 - Added a "caffeinate" command when installing updates to stop systems from sleeping during long installs
 # 6/19/17 - Removed the "wait" command at the end because it was just causing things to hang
-#					t- Added some sleep 0.2 lines to allow the script some time to catch up
+#					- Added some sleep 0.2 lines to allow the script some time to catch up
 #					- Fixed Dreamweaver channel ID
 #					- Added jamf_bin to determine which jamf binary to use
 # 3/23/17 - Added more to "super-echo" to make it nicer for the user to read what's available for updates
@@ -23,8 +24,8 @@
 
 icons=/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources
 rumlog=/var/tmp/RUMupdate.log # mmmmmm, rum log
-CD_APP=/Applications/Utilities/CocoaDialog.app/
-CocoaDialog="$CD_APP/Contents/MacOS/CocoaDialog"
+CD_APP=/Applications/Utilities/CocoaDialog.app
+CocoaDialog=$CD_APP/Contents/MacOS/CocoaDialog
 oldRUM=/usr/sbin/RemoteUpdateManager # this is where RUM used to live pre-10.11
 rum=/usr/local/bin/RemoteUpdateManager # post-10.11
 jamf_bin=$(/usr/bin/which jamf)
