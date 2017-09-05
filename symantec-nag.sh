@@ -9,6 +9,7 @@
 #
 # Changelog
 #
+# 9/7/15	- Re-Added a (better) user check for running at login in jamf
 # 8/31/17 - Cleaned up the script a bit, updates user variable
 # 8/25/17 - Added ability to customize force date or not; $4 is for a jamf variable
 # 8/10/17 - Added sudo -u $(ls -l /dev/console | awk '{print $3}')to the CocoaDialog portions to stop errors on older systems
@@ -20,11 +21,17 @@ icons=/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources
 CD_APP=/Applications/Utilities/CocoaDialog.app
 CocoaDialog=$CD_APP/Contents/MacOS/CocoaDialog
 jamf_bin=$(/usr/bin/which jamf)
-user=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
 install_date=$4 # $4 is for jamf server
 OTISmsg='A new Anti-Virus program needs to be installed on your computer. Please run the "Install Symantec Anti-Virus" policy in Self Service now.
 
 This installation should not take long and will require your machine to reboot.'
+
+# find the current user
+if [ ! -z "$3" ]; then
+	user=$3
+else
+	user=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
+fi
 
 # does CocoaDialog Exist?
 if [ ! -f $CocoaDialog ] ; then

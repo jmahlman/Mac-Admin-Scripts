@@ -8,6 +8,7 @@
 # and what applications are available on the local machine.
 #
 # Changelog
+# 9/5/17:    - Fixed a double negative if-statement
 # 7/26/17:  - Fixed a typo with powerpoint
 # 2/20/17:  - Replaced the sleep 5 on line 16 with the wait loop.
 #			- Cleaned up script to make it in line with my styling.
@@ -39,7 +40,7 @@ fi
 du="/usr/local/bin/dockutil"
 
 # Get the current logged in user that we'll be modifying
-if [ ! -n "$3" ]; then
+if [ ! -z "$3" ]; then
 	user=$3
 else
 	user=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')

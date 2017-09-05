@@ -9,6 +9,9 @@
 # Purpose: Adds office icons to dock using dockutil after installing Office 2016
 # Also installs dockutil if it's not found
 #
+# Changelog
+# 9/5/17:    - Fixed a double negative if-statement
+#
 
 jamfbinary=$(/usr/bin/which jamf)
 
@@ -24,7 +27,7 @@ fi
 du="/usr/local/bin/dockutil"
 
 # Get the current user
-if [ ! -n "$3" ]; then
+if [ ! -z "$3" ]; then
 	user=$3
 else
 	user=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
@@ -39,8 +42,8 @@ if [ -e "/Applications/Microsoft Word.app" ]; then
 	echo "Adding Office 2016 apps to dock"
 	sleep 3
 	$du --add "/Applications/Microsoft Word.app" --replacing "Microsoft Word" --no-restart /Users/$user
-	$du --add "/Applications/Microsoft Excel.app" --replacing "Microsoft Excel" --no-restart /Users/$user	
-	$du --add "/Applications/Microsoft Outlook.app" --replacing "Microsoft Outlook" --no-restart /Users/$user	
+	$du --add "/Applications/Microsoft Excel.app" --replacing "Microsoft Excel" --no-restart /Users/$user
+	$du --add "/Applications/Microsoft Outlook.app" --replacing "Microsoft Outlook" --no-restart /Users/$user
 	$du --add "/Applications/Microsoft Powerpoint.app" --replacing "Microsoft Powerpoint" --no-restart /Users/$user
 	# Restart the dock when done
 	sleep 3
