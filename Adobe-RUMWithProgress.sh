@@ -11,6 +11,7 @@
 #
 # Changelog
 #
+# 9/8/17 	- Added link to channel ID list from Adobe
 # 8/31/17 - Just some cleaning up
 # 8/29/17 - Added a "caffeinate" command when installing updates to stop systems from sleeping during long installs
 # 6/19/17 - Removed the "wait" command at the end because it was just causing things to hang
@@ -107,6 +108,7 @@ $rum --action=list > $rumlog
 
 # super-echo!  Echo pretty-ish output to user. Replaces Adobes channel IDs with actual app names
 # I think it's silly that I have to do this, but whatever. :)
+# Adobe channel ID list: https://helpx.adobe.com/enterprise/package/help/apps-deployed-without-their-base-versions.html
 secho=`sed -n '/Following*/,/\*/p' $rumlog \
 	| sed 's/Following/The\ Following/g' \
 	| sed 's/ACR/Acrobat/g' \
