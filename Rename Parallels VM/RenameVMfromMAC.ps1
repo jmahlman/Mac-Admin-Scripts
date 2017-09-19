@@ -1,8 +1,8 @@
 ﻿if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]::GetCurrent()).IsInRole([Security.Principal.WindowsBuiltInRole] "Administrator")) {
-Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit 
+Start-Process powershell.exe "-NoProfile -ExecutionPolicy Bypass -File `"$PSCommandPath`"" -Verb RunAs; exit
 }
 
-$hostMac = Get-Content \\Mac\Home\Public\hostname
+$hostMac = Get-Content \\Mac\Shared\hostname
 $newName = "vm-$hostMac"
 
 echo "Renaming Compter to $newName"
