@@ -7,6 +7,7 @@
 # Purpose: This script will add our dummy receipts (which are called cohorts) based on the room/computer name.
 #
 # Changelog
+# 10/26/17:	- Added some more suites. Might combine all suites eventually.
 # 10/25/17:	- Updated rooms and cleaned up naming.
 #						- Fixed header to conform with my other scripts
 #						- Removed GALLERY cohort because it's deprecated
@@ -42,10 +43,10 @@ labNumber=(A309 A615 A626 A728 AB9 AM11 M209 M707 T1113 T1212 T1213 T1219 T1223 
 TsmartClass=(T1014 T1049 T1053 T1102 T1106 T1121 T1202 T1703 T202 T511 T602 T604 T608 T702 T704 T706 T710 T712 T714 T716 T806 T831 T833 T902)
 AsmartClass=(AB16)
 GsmartClass=(G405 G408 G410 G411 G415 H312)
-StudioA3=(A315 A316 A317 A318 A319)
-StudioA2=(A231 A220)
-StudioA7=(A716 A723 A725 A726)
-suiteVoice=( T612 T614 T616 T618 T620 T700 T709)
+StudioT=(T1404 T1408)
+StudioA=(A315 A316 A317 A318 A319 A231 A220 A716 A723 A725 A726)
+suiteVoice=(T612 T614 T616 T618 T620 T700 T709)
+suiteGen=(T1112 T1403 T1405 T1407 T1409 T1410 T1412 T1414 T1415 T1416 T1513) #generic suites
 suiteDragon=(T1403 T1405 T1407 T1409)
 suiteDragonUM=(T1421A T1421B T1425B T1425C)
 editBay=(T1108 T1109 T1111 T1114 T1115 T1116 T1117 T1118 T1119)
@@ -59,19 +60,22 @@ chflags hidden /Library/JAMF\ DM
 if [[ " ${labNumber[@]} " =~ " ${roomNumber} " ]]; then
 	lab
 
-elif [[ " ${StudioA3[@]} " =~ " ${roomNumber} " ]]; then
+elif [[ " ${StudioT[@]} " =~ " ${roomNumber} " ]]; then
 	studio
 
-elif [[ " ${StudioA2[@]} " =~ " ${roomNumber} " ]]; then
-	studio
-
-elif [[ " ${StudioA7[@]} " =~ " ${roomNumber} " ]]; then
+elif [[ " ${StudioA[@]} " =~ " ${roomNumber} " ]]; then
 	studio
 
 elif [[ " ${suiteVoice[@]} " =~ " ${roomNumber} " ]]; then
 	suite
 
+elif [[ " ${suiteGen[@]} " =~ " ${roomNumber} " ]]; then
+	suite
+
 elif [[ " ${suiteDragon[@]} " =~ " ${roomNumber} " ]]; then
+	suite
+
+elif [[ " ${suiteDragonUM[@]} " =~ " ${roomNumber} " ]]; then
 	suite
 
 elif [[ " ${editBay[@]} " =~ " ${roomNumber} " ]]; then
