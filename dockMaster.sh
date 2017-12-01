@@ -8,14 +8,14 @@
 # and what applications are available on the local machine.
 #
 # Changelog
-# 9/5/17:    - Fixed a double negative if-statement
+# 12/1/17:  - Added KIOSK items
+# 9/5/17:   - Fixed a double negative if-statement
 # 7/26/17:  - Fixed a typo with powerpoint
 # 2/20/17:  - Replaced the sleep 5 on line 16 with the wait loop.
 #			- Cleaned up script to make it in line with my styling.
 #			- I removed the "originally created by" in the header, this is
 #			  so customized that it no longer has any part of the original in it.
 #			- ALL of the comments!
-#
 # 9/15/16:  - Removed network connect since we don't use it anymore.
 #
 #
@@ -47,7 +47,7 @@ else
 fi
 echo "Running DockMaster on $user"
 
-# FInd out the type of machine using our COHORT receipt
+# Find out the type of machine using our COHORT receipt
 if [ -f /Library/JAMF\ DM/Cohort/*.txt ]; then
 	cohort=$(cat /Library/JAMF\ DM/Cohort/*.txt)
 	echo "Cohort set to $cohort"
@@ -107,21 +107,23 @@ sleep 2 # we need to give this time to work or we'll get errors with "replacing"
 #######################################
 #### Items for all/no cohorts
 #######################################
-echo "Adding browsers"
-$du --add "/Applications/Safari.app" --no-restart /Users/$user
-if [ -e "/Applications/Google Chrome.app/" ]; then
-	$du --add "/Applications/Google Chrome.app" --no-restart /Users/$user
+if [ $cohort != "KIOSK" ]; then # KIOSK machines get special treatment, at the bottom.
+  echo "Adding browsers"
+  $du --add "/Applications/Safari.app" --no-restart /Users/$user
+  if [ -e "/Applications/Google Chrome.app/" ]; then
+  	$du --add "/Applications/Google Chrome.app" --no-restart /Users/$user
+  fi
+  # We have two different firefox types, lets figure out which one is installed
+  if [ -e /Applications/Firefox* ]; then
+  	firefox=$(find /Applications -type d -maxdepth 1 -name Firefox*)
+  	$du --add "$firefox" --no-restart /Users/$user
+  fi
+  # Add Office icons to all cohorts
+  officeIcons
+  # Every user gets a downloads folder too
+  echo "Adding the Downloads folder"
+  $du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
 fi
-# We have two different firefox types, lets figure out which one is installed
-if [ -e /Applications/Firefox* ]; then
-	firefox=$(find /Applications -type d -maxdepth 1 -name Firefox*)
-	$du --add "$firefox" --no-restart /Users/$user
-fi
-# Add Office icons to all cohorts
-officeIcons
-# Every user gets a downloads folder too
-echo "Adding the Downloads folder"
-$du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
 
 #######################################
 #### Add dock items for FACSTAFF cohort
@@ -196,6 +198,12 @@ elif [ $cohort == "CHECKOUT" ]; then
 #######################################
 elif [ $cohort == "KIOSK" ]; then
 	echo "Adding apps for KIOSK cohort"
+	$du --add "/Applications/Safari.app" --no-restart /Users/$user
+	# This should be the end of the applications in the dock, anything after should be a folder
+  $du --add "~/Downloads" --view fan --display stack --sort dateadded --no-restart /Users/$user
+	$du --add https://sss.uarts.edu/ --label 'Student Self Service' --no-restart /Users/$user
+  $du --add https://mycampus.uarts.edu/ --label 'UArts Portal' --no-restart /Users/$user
+  $du --add http://www.studentclearinghouse.org/ --label 'Transcripts & Enrollment Verifications' --after Downloads --no-restart /Users/$user
 
 fi #end of cohorts
 
