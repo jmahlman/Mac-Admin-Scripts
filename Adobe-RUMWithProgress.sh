@@ -11,6 +11,7 @@
 #
 # Changelog
 #
+# 1/8/18	- Updated channel ID list with new channels and names
 # 9/8/17	- Added link to channel ID list from Adobe
 # 8/31/17 - Just some cleaning up
 # 8/29/17 - Added a "caffeinate" command when installing updates to stop systems from sleeping during long installs
@@ -120,14 +121,16 @@ secho=`sed -n '/Following*/,/\*/p' $rumlog \
 	| sed 's/MUSE/Muse/g' \
 	| sed 's/PHSP/Photoshop/g' \
 	| sed 's/PRLD/Prelude/g' \
-	| sed 's/SPRK/Experience\ Design\ Beta/g' \
+	| sed 's/SPRK/XD/g' \
 	| sed 's/KBRG/Bridge/g' \
 	| sed 's/AICY/InCopy/g' \
 	| sed 's/ANMLBETA/Character\ Animator\ Beta/g' \
 	| sed 's/DRWV/Dreamweaver/g' \
 	| sed 's/IDSN/InDesign/g' \
 	| sed 's/PPRO/Premiere\ Pro/g' \
-	| sed 's/ESHR/Project\ Felix/g' `
+	| sed 's/LTRM/Lightroom\ Classic/g' \
+	| sed 's/CHAR/Character\ Animator/g' \
+	| sed 's/ESHR/Dimension/g' `
 
 if [ "$(grep "Following Updates are applicable" $rumlog)" == "Following Updates are applicable on the system :" ] ; then
 	rv=`$CocoaDialog yesno-msgbox --float --icon-file "$icons/ToolbarInfo.icns" --no-cancel \
