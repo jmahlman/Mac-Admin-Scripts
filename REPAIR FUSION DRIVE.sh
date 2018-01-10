@@ -9,7 +9,7 @@
 #
 # Changelog
 #
-# 1/10/18 - Added a warning to the APFS funtion: PLEASE READ IT! (Line 47)
+# 1/10/18 - Added a warning to the APFS function: PLEASE READ IT! (Line 43)
 #         - Cleaned up a bit
 # 1/3/18	- Added CHECK_FOR_APFS function
 #
