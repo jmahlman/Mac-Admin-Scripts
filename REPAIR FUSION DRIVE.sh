@@ -1,25 +1,22 @@
 #!/bin/bash
-
-########################################################################
-# Author:   Calum Hunter                                               #
-# Date:     21/12/2016                                                 #
-# Version:  0.7                                                        #
-# Purpose:  Fusion Drive Detection and general HD formatting before    #
-#           imaging tasks.                                             #
-#                                                                      #
-########################################################################
 #
-# Edited John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
+# Original Author:   Calum Hunter
+# Date:     21/12/2016
+# Purpose:  Fusion Drive Detection and general HD formatting before
+#           imaging tasks.
+#
+# Edited by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
 #
 # Changelog
 #
+# 1/10/18 - Added a warning to the APFS funtion: PLEASE READ IT! (Line 47)
+#         - Cleaned up a bit
 # 1/3/18	- Added CHECK_FOR_APFS function
 #
 #
 
-SCRIPT_NAME="detect_fusion_format.sh"
+SCRIPT_NAME="REPAIR FUSION DRIVE.sh"
 VERS="0.8"
-SOURCE=""dd
 
 # Setup Logging
 # Get the machines serial number to start with
@@ -43,6 +40,7 @@ CD="/Applications/Utilities/cocoaDialog.app/Contents/MacOS/cocoaDialog"
 
 CHECK_FOR_APFS(){
     # Check to see is this is an APFS formatted drive so we can remove it and let the rest of the script go
+    # FYI! THIS IS PROBABLY NOT THE SAFEST METHOD FOR DOING THIS AND MAY NOT WORK FOR EVERYONE!  USE WITH CAUTION!
     echo $(date "+%a %b %d %H:%M:%S") " - Checking for APFS Container..."
     FSTYPE=$( diskutil apfs list ) # this check is ugly but it works
     if [ "$FSTYPE" != "No APFS Containers found" ]; then
