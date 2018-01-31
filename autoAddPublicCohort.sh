@@ -7,6 +7,7 @@
 # Purpose: This script will add our dummy receipts (which are called cohorts) based on the room/computer name.
 #
 # Changelog
+# 01/31/18:	- Removed a room from labs and the MUSIC function because it's not needed.
 # 10/26/17:	- Added some more suites. Might combine all suites eventually.
 # 10/25/17:	- Updated rooms and cleaned up naming.
 #						- Fixed header to conform with my other scripts
@@ -31,15 +32,11 @@ smart_classroom () {
 	echo "SMART-CLASSROOM" > /Library/JAMF\ DM/Cohort/RECEIPT-SMART-CLASSROOM.txt
 }
 
-music () {
-	echo "MUSIC" > /Library/JAMF\ DM/Cohort/RECEIPT-MUSIC.txt
-}
-
 # Get room number from system name
 roomNumber=`scutil --get ComputerName | awk 'BEGIN {FS="-"} END {print $1}' | tr "[a-z]" "[A-Z]"`
 
 # Arrays for all of our different types of rooms
-labNumber=(A309 A615 A626 A728 AB9 AM11 M209 M707 T1113 T1212 T1213 T1219 T1223 T1328 T1402 T1421 T1423 T1425 T1506 T802 T907)
+labNumber=(A309 A615 A626 A728 AB9 AM11 M707 T1113 T1212 T1213 T1219 T1223 T1328 T1402 T1421 T1423 T1425 T1506 T802 T907)
 TsmartClass=(T1014 T1049 T1053 T1102 T1106 T1121 T1202 T1703 T202 T511 T602 T604 T608 T702 T704 T706 T710 T712 T714 T716 T806 T831 T833 T902)
 AsmartClass=(AB16)
 GsmartClass=(G405 G408 G410 G411 G415 H312)
