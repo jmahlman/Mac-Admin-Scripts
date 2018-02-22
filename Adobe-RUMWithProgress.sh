@@ -11,6 +11,7 @@
 #
 # Changelog
 #
+# 2/22/18 - Cleaned up some logic to make it prettier
 # 1/8/18	- Updated channel ID list with new channels and names
 # 9/8/17	- Added link to channel ID list from Adobe
 # 8/31/17 - Just some cleaning up
@@ -132,7 +133,7 @@ secho=`sed -n '/Following*/,/\*/p' $rumlog \
 	| sed 's/CHAR/Character\ Animator/g' \
 	| sed 's/ESHR/Dimension/g' `
 
-if [ "$(grep "Following Updates are applicable" $rumlog)" == "Following Updates are applicable on the system :" ] ; then
+if [ "$(grep "Following Updates are applicable" $rumlog)" ] ; then
 	rv=`$CocoaDialog yesno-msgbox --float --icon-file "$icons/ToolbarInfo.icns" --no-cancel \
 		--title "UArts Adobe Updater" --text "Do you want to install the following updates?" --informative-text "$secho"`
 	if [ "$rv" == "1" ]; then
