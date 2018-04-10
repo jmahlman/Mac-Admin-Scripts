@@ -9,6 +9,8 @@
 #
 # Changelog
 #
+# 4/10/18 - Rearrange the policies.
+# 4/9/18  - Added ContinueButtonRegister comment.
 # 2/22/18	- Initial script creation
 #
 #
@@ -28,6 +30,10 @@ echo "Command: WindowStyle: NotMovable" >> /var/tmp/depnotify.log
 /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify -fullScreen &
 
 # Do the things!
+echo "Status: Renaming machine..." >> /var/tmp/depnotify.log
+# Do this first so that during firstRun the name is correct
+/usr/local/jamf/bin/jamf policy -event renameByAPI
+
 echo "Status: Installing Self Service..." >> /var/tmp/depnotify.log
 # I know this isn't REALLY installing self service, it's just easier for the user to see
 /usr/local/jamf/bin/jamf policy -event $4
@@ -41,8 +47,9 @@ echo "Status: Installing Pharos..." >> /var/tmp/depnotify.log
 echo "Status: Installing Microsoft Office 2016..." >> /var/tmp/depnotify.log
 /usr/local/jamf/bin/jamf policy -event enroll-office2016
 
-echo "Status: Renaming machine..." >> /var/tmp/depnotify.log
-/usr/local/jamf/bin/jamf policy -event renameByAPI
+# Use this on the custom build of DEPNotify from Slack user @fgd.  Brings up the user input screen.
+# You will want to change everything after this though because this is the last screen shown.
+#echo "Command: ContinueButtonRegister" >> /var/tmp/depnotify.log
 
 echo "Status: Updating server inventory..." >> /var/tmp/depnotify.log
 /usr/local/jamf/bin/jamf recon
