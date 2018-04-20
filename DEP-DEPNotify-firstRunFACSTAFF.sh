@@ -10,6 +10,7 @@
 #
 # Changelog
 #
+# 4/20/18	-	Fixed a small typo...it really didn't change anything.
 # 4/19/18 - Added defaults for DEPNotify pref file to allow for assignment
 #					- Added the loop for user entry, hopefully that works
 #					- Renamed script, will eventually make a generalized script for all cohorts
@@ -47,7 +48,7 @@ sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldLowerPlace
 echo "Command: MainTitle: Click Assign to begin Deployment" >> $DNLOG
 echo "Status: Just waiting for you..." >> $DNLOG
 echo "Command: Image: /var/tmp/uarts-logo.png" >> $DNLOG
-echo "Command: Determinate: 8" >> $DNLOG
+echo "Command: Determinate: 10" >> $DNLOG
 #echo "Command: WindowStyle: NotMovable" >> $DNLOG
 # re-enable the above line after we update to jamf 10 and add kext whitelisting
 
@@ -59,7 +60,7 @@ echo "Command: ContinueButtonRegister: Assign" >> $DNLOG
 DNPLIST=/var/tmp/DEPNotify.plist
 # hold here until the user enters something
 while : ; do
-	[[ -f $DNPLIST ]]	&& break
+	[[ -f $DNPLIST ]] && break
 	sleep 1
 done
 # grab the username from the plist that is created so we can use it to automaticlaly create the account
