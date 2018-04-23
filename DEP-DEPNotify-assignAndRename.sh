@@ -9,6 +9,7 @@
 #
 # Changelog
 #
+# 4/23/18	-	Using the jamf binary to change the computer name instead of the three commands
 # 4/19/18 - Initial script creation
 #
 #
@@ -70,10 +71,7 @@ fi
 # rename the computer
 COMPUTERNAME="${USERNAME}-${PREFIX}"
 COMPUTERNAME=`echo ${COMPUTERNAME:0:15}`
-/usr/sbin/scutil --set ComputerName "$COMPUTERNAME"
-/usr/sbin/scutil --set LocalHostName "$COMPUTERNAME"
-/usr/sbin/scutil --set HostName "$COMPUTERNAME"
-dscacheutil -flushcache
+/usr/local/jamf/bin/jamf setComputerName -name $COMPUTERNAME
 
 # update our extension attribute
 mkdir /Library/JAMF\ DM
