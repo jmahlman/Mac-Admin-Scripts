@@ -10,6 +10,8 @@
 #
 # Changelog
 #
+# 4/23/18	-	Added a "wait for dock" loop to it will wait until a user is logged in
+#					-	Moved the caffinate command down so it will only run if DEPNotify is running and waiting for user input
 # 4/20/18	-	Fixed a small typo...it really didn't change anything.
 # 4/19/18 - Added defaults for DEPNotify pref file to allow for assignment
 #					- Added the loop for user entry, hopefully that works
@@ -28,9 +30,12 @@ else
 	CURRENTUSER=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
 fi
 
-# Let's caffinate the mac because this can take long
-caffeinate -d -i -m -u &
-caffeinatepid=$!
+# we need to wait for the dock to actually start
+dockStatus=$(pgrep -x Dock)
+while [[ "$dockStatus" == "" ]]; do
+	sleep 5
+	dockStatus=$(pgrep -x Dock)
+done
 
 # Install DEPNotify
 $JAMFBIN policy -event install_depnotify
@@ -54,6 +59,10 @@ echo "Command: Determinate: 10" >> $DNLOG
 
 #Open DepNotify
 sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify &
+
+# Let's caffinate the mac because this can take long
+caffeinate -d -i -m -u &
+caffeinatepid=$!
 
 # get user input...
 echo "Command: ContinueButtonRegister: Assign" >> $DNLOG
@@ -92,8 +101,8 @@ $JAMFBIN policy -event enroll-sep-facstaff
 echo "Status: Assigning and renaming device..." >> $DNLOG
 $JAMFBIN policy -event enroll-assignDevice
 
-echo "Status: Creating local user account with password as username..." >> $DNLOG
-$JAMFBIN createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
+# echo "Status: Creating local user account with password as username..." >> $DNLOG
+# $JAMFBIN createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
 
 echo "Status: Updating Inventory..." >> $DNLOG
 $JAMFBIN recon
