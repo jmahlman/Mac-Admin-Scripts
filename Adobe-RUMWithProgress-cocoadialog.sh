@@ -2,15 +2,19 @@
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
-# Name: Adobe-RUMWithProgress
+# Name: Adobe-RUMWithProgress-cocoadialog
 #
 # Purpose: This script uses CocoaDialog to show which updates are available for Adobe CC and asks
 # if they would like to install those updates.  If they choose to install updates it will
-# show a progress bar to the user and begin installing updates. The pregress bar doesn't change,
-# it's only there to show the user that something is actucally happening.
+# show a progress bar to the user and begin installing updates. The progress bar doesn't change,
+# it's only there to show the user that something is actually happening.
 #
 # Changelog
 #
+# 4/25/18	-	Thanks for user remyb we've decided to move to using jamfhelper instead of cocoadialog. Instead of
+#						updating this script, I'm just going to create a new one so people who do not use jamf can still use this.
+#						This script may not be update much anymore.
+#					- Renamed script to show that this uses CocoaDialog.
 # 2/22/18 - Cleaned up some logic to make it prettier
 # 1/8/18	- Updated channel ID list with new channels and names
 # 9/8/17	- Added link to channel ID list from Adobe
