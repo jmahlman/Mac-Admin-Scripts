@@ -10,6 +10,7 @@
 #
 # Changelog
 #
+# 4/25/18	-	Moved AV install up in the process.
 # 4/23/18	-	Added a "wait for dock" loop to it will wait until a user is logged in
 #					-	Moved the caffinate command down so it will only run if DEPNotify is running and waiting for user input
 # 4/20/18	-	Fixed a small typo...it really didn't change anything.
@@ -82,6 +83,10 @@ echo "Command: MainText: Please do not shutdown, reboot, or close your device, i
 echo "Status: Installing Management Framework..." >> $DNLOG
 $JAMFBIN policy -event enroll-firstRunFACSTAFF
 
+# after we update to jamf 10 and add kext whitelisting we can change what this says
+echo "Status: Symantec Antivirus, please approve when asked..." >> $DNLOG
+$JAMFBIN policy -event enroll-sep-facstaff
+
 echo "Status: Installing Pulse VPN client..." >> $DNLOG
 $JAMFBIN policy -event enroll-pulse
 
@@ -93,10 +98,6 @@ $JAMFBIN policy -event enroll-keyclient
 
 echo "Status: Installing Microsoft Office 2016..." >> $DNLOG
 $JAMFBIN policy -event enroll-office2016
-
-# after we update to jamf 10 and add kext whitelisting we can change what this says
-echo "Status: Symantec Antivirus, please approve when asked..." >> $DNLOG
-$JAMFBIN policy -event enroll-sep-facstaff
 
 echo "Status: Assigning and renaming device..." >> $DNLOG
 $JAMFBIN policy -event enroll-assignDevice
