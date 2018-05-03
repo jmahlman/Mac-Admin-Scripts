@@ -10,6 +10,7 @@
 #
 # Changelog
 #
+# 5/3/18	-	Trying a new method for setting username and asset tag.  See DEP-DEPNotify-assignAndRename updates.
 # 4/25/18	-	Moved AV install up in the process.
 # 4/23/18	-	Added a "wait for dock" loop to it will wait until a user is logged in
 #					-	Moved the caffinate command down so it will only run if DEPNotify is running and waiting for user input
@@ -53,6 +54,7 @@ sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldLowerPlace
 
 echo "Command: MainTitle: Click Assign to begin Deployment" >> $DNLOG
 echo "Status: Just waiting for you..." >> $DNLOG
+echo "Command: MainText: This process will assign this device and install base software." >> $DNLOG
 echo "Command: Image: /var/tmp/uarts-logo.png" >> $DNLOG
 echo "Command: Determinate: 10" >> $DNLOG
 #echo "Command: WindowStyle: NotMovable" >> $DNLOG
@@ -99,14 +101,14 @@ $JAMFBIN policy -event enroll-keyclient
 echo "Status: Installing Microsoft Office 2016..." >> $DNLOG
 $JAMFBIN policy -event enroll-office2016
 
-echo "Status: Assigning and renaming device..." >> $DNLOG
+echo "Status: Updating inventory and renaming device..." >> $DNLOG
 $JAMFBIN policy -event enroll-assignDevice
 
 # echo "Status: Creating local user account with password as username..." >> $DNLOG
 # $JAMFBIN createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
-
-echo "Status: Updating Inventory..." >> $DNLOG
-$JAMFBIN recon
+#
+# echo "Status: Updating Inventory..." >> $DNLOG
+# $JAMFBIN recon
 
 echo "Command: MainTitle: Almost done!" >> $DNLOG
 
