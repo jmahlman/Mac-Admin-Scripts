@@ -9,6 +9,7 @@
 #
 # Changelog
 #
+# 5/3/18  - Just adding "Uarts" to the window title.
 # 4/25/18	-	Thanks for user remyb we've decided to move to using jamfhelper instead of cocoadialog. Instead of
 #						updating the old script, I'm just going to create this new one so non-jamf people can still use the other.
 # 4/25/18 - Changed all CocoaDialog stuff to jamfHelper - remyb (Thanks!)
@@ -111,7 +112,7 @@ secho=`sed -n '/Following*/,/\*/p' $rumlog \
     | sed 's/ESHR/Dimension/g' `
 
 if [ "$(grep "Following Updates are applicable" $rumlog)" ] ; then
-  userChoice=$("$jamfHelper" -windowType hud -lockHUD -title "Adobe Updater" \
+  userChoice=$("$jamfHelper" -windowType hud -lockHUD -title "UArts Adobe Updater" \
   -icon "$icons/ToolbarInfo.icns" -description "Do you want to install these updates?
 
 $secho" -button1 "Yes" -button2 "No")
@@ -123,7 +124,7 @@ $secho" -button1 "Yes" -button2 "No")
         exit 0
     fi
 else
-    "$jamfHelper" -windowType hud -title "Adobe Updater" -description "There are no Adobe Updates available." \
+    "$jamfHelper" -windowType hud -title "UArts Adobe Updater" -description "There are no Adobe Updates available." \
     -icon "$icons/ToolbarInfo.icns" -button1 Ok -defaultButton 1
     exit 0
 fi
