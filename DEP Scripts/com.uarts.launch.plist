@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>GroupName</key>
+	<string>wheel</string>
+	<key>InitGroups</key>
+	<false/>
+	<key>Label</key>
+	<string>com.uarts.launch</string>
+	<key>Program</key>
+	<string>/var/tmp/com.uarts.DEPprovisioning.facstaff</string>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StartInterval</key>
+	<integer>10</integer>
+	<key>UserName</key>
+	<string>root</string>
+	<key>StandardErrorPath</key>
+	<string>/var/tmp/depnotify.launch.err</string>
+	<key>StandardOutPath</key>
+	<string>/var/tmp/depnotify.launch.out</string>
+</dict>
+</plist>

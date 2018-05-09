@@ -1,0 +1,114 @@
+#!/bin/sh
+#
+#
+# Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
+# Name: com.uarts.DEPprovisioning.facstaff
+#
+# Purpose: Install and run DEPNotify at enrollment time and do some final touches
+# for the users.  It also checks for software updates and installs them if found.
+# This gets put in the composer package along with DEPNotofy, com.uarts.launch.plist,
+# and any supporting files. Then add the post install script to the package.
+#
+#
+# Changelog
+#
+# 5/8/18	- New Script (same as DEP-DEPNotify-firstRunFACSTAFF but now made into a launchDaemon)
+#
+# Get the logged in user
+CURRENTUSER=$(/usr/bin/python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
+# Setup Done File
+setupDone="/var/db/receipts/com.uarts.provisioning.done.bom"
+
+JAMFBIN=/usr/local/jamf/bin/jamf
+
+if pgrep -x "Finder" \
+&& pgrep -x "Dock" \
+&& [ "$CURRENTUSER" != "_mbsetupuser" ] \
+&& [ ! -f "${setupDone}" ]; then
+
+  # Kill any installer process running
+  killall Installer
+  # Wait a few seconds
+  sleep 5
+
+  # Let's Roll!
+
+  # DEPNotify Log file
+  DNLOG=/var/tmp/depnotify.log
+
+  # Configure DEPNotify
+  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify PathToPlistFile /var/tmp/
+  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify RegisterMainTitle "Assignment..."
+  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify RegistrationButtonLabel Assign
+  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldUpperLabel "Assigned User"
+  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldUpperPlaceholder "dadams"
+  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldLowerLabel "Asset Tag"
+  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldLowerPlaceholder "UA42LAP1337"
+
+  echo "Command: MainTitle: Click Assign to begin Deployment" >> $DNLOG
+  echo "Command: MainText: This process will assign this device and install base software." >> $DNLOG
+  echo "Command: Image: /var/tmp/uarts-logo.png" >> $DNLOG
+  echo "Command: DeterminateManual: 5" >> $DNLOG
+
+  # Open DepNotify
+  sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify &
+
+  # Let's caffinate the mac because this can take long
+  /usr/bin/caffeinate -d -i -m -u &
+  caffeinatepid=$!
+
+  # get user input...
+  echo "Command: ContinueButtonRegister: Assign" >> $DNLOG
+  echo "Status: Just waiting for you..." >> $DNLOG
+  DNPLIST=/var/tmp/DEPNotify.plist
+  # hold here until the user enters something
+  while : ; do
+  	[[ -f $DNPLIST ]] && break
+  	sleep 1
+  done
+  # grab the username from the plist that is created so we can use it to automaticlaly create the account
+  USERNAME=$(/usr/libexec/plistbuddy $DNPLIST -c "print 'Assigned User'" | tr [A-Z] [a-z])
+
+  echo "Command: MainTitle: Preparing the system for Deployment" >> $DNLOG
+  echo "Command: MainText: Please do not shutdown, reboot, or close your device, it will automatically reboot when complete." >> $DNLOG
+
+  echo "Command: DeterminateManualStep:" >> $DNLOG
+  # Do the things! We're calling a single policy now.
+  echo "Status: Installing base software..." >> $DNLOG
+  $JAMFBIN policy -event enroll-firstRunFACSTAFF
+
+  echo "Command: DeterminateManualStep:" >> $DNLOG
+  echo "Status: Creating local user account with password as username..." >> $DNLOG
+  /usr/local/jamf/bin/jamf createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
+
+  echo "Command: DeterminateManualStep:" >> $DNLOG
+  echo "Status: Assigning and renaming device..." >> $DNLOG
+  $JAMFBIN policy -event enroll-assignDevice
+
+  echo "Status: Updating Inventory..." >> $DNLOG
+  $JAMFBIN recon
+
+  echo "Command: MainTitle: Almost done!" >> $DNLOG
+  echo "Command: DeterminateManualStep:" >> $DNLOG
+  echo "Status: Checking for and installing any OS updates..." >> $DNLOG
+  /usr/sbin/softwareupdate -ia
+
+  kill "$caffeinatepid"
+
+  echo "Command: RestartNow:" >>  $DNLOG
+
+  # Remove DEPNotify and the logs
+  /bin/rm -Rf /var/tmp/DEPNotify.app
+  /bin/rm -Rf /var/tmp/uarts-logo.png
+  /bin/rm -Rf $DNLOG
+  /bin/rm -Rf $DNPLIST
+
+  # Wait a few seconds
+  sleep 5
+  # Create a bom file that allow this script to stop launching DEPNotify after done
+  /usr/bin/touch /var/db/receipts/com.uarts.provisioning.done.bom
+  # Remove the Launch Daemon
+  /bin/rm -Rf /Library/LaunchDaemons/com.uarts.launch.plist
+
+fi
+exit 0

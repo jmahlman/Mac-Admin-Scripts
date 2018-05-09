@@ -6,11 +6,13 @@
 #
 # Purpose: Install and run DEPNotify at enrollment time and do some final touches
 # for the users.  It also checks for software updates and installs them if found.
-# Using a custom build of DEPNotify from slack user @fgd.
 #
 # Changelog
 #
-# 5/3/18	-	Trying a new method for setting username and asset tag.  See DEP-DEPNotify-assignAndRename updates.
+# 5/8/18	- Combined with LaunchDaemon script. This will remain for reference.
+#         - Changed around a bunch of things since we're moving to a single policy AND LaunchDaemon.
+#					-	Moving to DeterminateManual so we can control the progress bar better.
+# 5/3/18	-	Trying a new method for setting username and asset tag.  See DEP-DEPNotify-assignAndRename updates. (REVERTED)
 # 4/25/18	-	Moved AV install up in the process.
 # 4/23/18	-	Added a "wait for dock" loop to it will wait until a user is logged in
 #					-	Moved the caffinate command down so it will only run if DEPNotify is running and waiting for user input
@@ -32,18 +34,10 @@ else
 	CURRENTUSER=$(python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
 fi
 
-# we need to wait for the dock to actually start
-dockStatus=$(pgrep -x Dock)
-while [[ "$dockStatus" == "" ]]; do
-	sleep 5
-	dockStatus=$(pgrep -x Dock)
-done
-
-# Install DEPNotify
-$JAMFBIN policy -event install_depnotify
+# DEPNotify Log file
 DNLOG=/var/tmp/depnotify.log
 
-#Configure DEPNotify
+# Configure DEPNotify
 sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify PathToPlistFile /var/tmp/
 sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify RegisterMainTitle "Assignment..."
 sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify RegistrationButtonLabel Assign
@@ -53,22 +47,23 @@ sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldLowerLabel
 sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldLowerPlaceholder "UA42LAP1337"
 
 echo "Command: MainTitle: Click Assign to begin Deployment" >> $DNLOG
-echo "Status: Just waiting for you..." >> $DNLOG
 echo "Command: MainText: This process will assign this device and install base software." >> $DNLOG
 echo "Command: Image: /var/tmp/uarts-logo.png" >> $DNLOG
-echo "Command: Determinate: 10" >> $DNLOG
+echo "Command: DeterminateManual: 5" >> $DNLOG
 #echo "Command: WindowStyle: NotMovable" >> $DNLOG
 # re-enable the above line after we update to jamf 10 and add kext whitelisting
 
-#Open DepNotify
+# Open DepNotify
 sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify &
+# We'll re-add -fullScreen once we upgrade to jamf 10 probably
 
 # Let's caffinate the mac because this can take long
-caffeinate -d -i -m -u &
+/usr/bin/caffeinate -d -i -m -u &
 caffeinatepid=$!
 
 # get user input...
 echo "Command: ContinueButtonRegister: Assign" >> $DNLOG
+echo "Status: Just waiting for you..." >> $DNLOG
 DNPLIST=/var/tmp/DEPNotify.plist
 # hold here until the user enters something
 while : ; do
@@ -79,48 +74,35 @@ done
 USERNAME=$(/usr/libexec/plistbuddy $DNPLIST -c "print 'Assigned User'" | tr [A-Z] [a-z])
 
 echo "Command: MainTitle: Preparing the system for Deployment" >> $DNLOG
-echo "Command: MainText: Please do not shutdown, reboot, or close your device, it will reboot automatically when complete." >> $DNLOG
+echo "Command: MainText: Please do not shutdown, reboot, or close your device, it will automatically reboot when complete." >> $DNLOG
 
-# Do the things! Eventually we'll just make one policy to run instead of calling several different ones
-echo "Status: Installing Management Framework..." >> $DNLOG
+echo "Command: DeterminateManualStep:" >> $DNLOG
+# Do the things! We're calling a single policy now.
+echo "Status: Installing base software..." >> $DNLOG
 $JAMFBIN policy -event enroll-firstRunFACSTAFF
 
-# after we update to jamf 10 and add kext whitelisting we can change what this says
-echo "Status: Symantec Antivirus, please approve when asked..." >> $DNLOG
-$JAMFBIN policy -event enroll-sep-facstaff
+echo "Command: DeterminateManualStep:" >> $DNLOG
+echo "Status: Creating local user account with password as username..." >> $DNLOG
+/usr/local/jamf/bin/jamf createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
 
-echo "Status: Installing Pulse VPN client..." >> $DNLOG
-$JAMFBIN policy -event enroll-pulse
-
-echo "Status: Installing Pharos..." >> $DNLOG
-$JAMFBIN policy -event enroll-pharos
-
-echo "Status: Installing KeyClient..." >> $DNLOG
-$JAMFBIN policy -event enroll-keyclient
-
-echo "Status: Installing Microsoft Office 2016..." >> $DNLOG
-$JAMFBIN policy -event enroll-office2016
-
-echo "Status: Updating inventory and renaming device..." >> $DNLOG
+echo "Command: DeterminateManualStep:" >> $DNLOG
+echo "Status: Assigning and renaming device..." >> $DNLOG
 $JAMFBIN policy -event enroll-assignDevice
 
-# echo "Status: Creating local user account with password as username..." >> $DNLOG
-# $JAMFBIN createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
-#
-# echo "Status: Updating Inventory..." >> $DNLOG
-# $JAMFBIN recon
+echo "Status: Updating Inventory..." >> $DNLOG
+$JAMFBIN recon
 
 echo "Command: MainTitle: Almost done!" >> $DNLOG
-
+echo "Command: DeterminateManualStep:" >> $DNLOG
 echo "Status: Checking for and installing any OS updates..." >> $DNLOG
 /usr/sbin/softwareupdate -ia
 
 kill "$caffeinatepid"
 
-echo "Command: RestartNow:" >> $DNLOG
+echo "Command: RestartNow:" >>  $DNLOG
 
 # Remove DEPNotify and the logs
-rm -Rf /var/tmp/DEPNotify.app
-rm -Rf /var/tmp/uarts-logo.png
-rm -Rf $DNLOG
-rm -Rf $DNPLIST
+/bin/rm -Rf /var/tmp/DEPNotify.app
+/bin/rm -Rf /var/tmp/uarts-logo.png
+/bin/rm -Rf $DNLOG
+/bin/rm -Rf $DNPLIST
