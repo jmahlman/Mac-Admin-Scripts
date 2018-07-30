@@ -1,15 +1,8 @@
 #!/bin/sh
 ## postinstall
 
-#!/bin/sh
-
 echo  "disable auto updates ASAP" >> /var/log/jamf.log
-	defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist AutomaticDownload -bool NO
-	defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist ConfigDataInstall -bool NO
-	defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist CriticalUpdateInstall -bool NO
-	defaults write /Library/Preferences/com.apple.commerce.plist AutoUpdateRestartRequired -bool NO
-	defaults write /Library/Preferences/com.apple.commerce.plist AutoUpdate -bool NO
-	defaults write /Library/Preferences/com.apple.SoftwareUpdate.plist AutomaticCheckEnabled -bool NO
+	/usr/sbin/softwareupdate --schedule off
 
 # Disable diagnostic data
 	SUBMIT_DIAGNOSTIC_DATA_TO_APPLE=FALSE

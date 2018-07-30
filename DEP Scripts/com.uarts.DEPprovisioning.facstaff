@@ -12,6 +12,8 @@
 #
 # Changelog
 #
+# 7/30/18 - Changed key from RegistrationButtonLabel to RegisterButtonLabel (new version of DEPNotify)
+#         - Missed a jamf binary call somehow
 # 5/8/18	- New Script (same as DEP-DEPNotify-firstRunFACSTAFF but now made into a launchDaemon)
 #
 # Get the logged in user
@@ -36,21 +38,22 @@ if pgrep -x "Finder" \
   # DEPNotify Log file
   DNLOG=/var/tmp/depnotify.log
 
-  # Configure DEPNotify
+  # Configure DEPNotify registration window
   sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify PathToPlistFile /var/tmp/
   sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify RegisterMainTitle "Assignment..."
-  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify RegistrationButtonLabel Assign
+  sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify RegisterButtonLabel Assign
   sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldUpperLabel "Assigned User"
   sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldUpperPlaceholder "dadams"
   sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldLowerLabel "Asset Tag"
   sudo -u "$CURRENTUSER" defaults write menu.nomad.DEPNotify UITextFieldLowerPlaceholder "UA42LAP1337"
 
+  # Configure DEPNotify starting window
   echo "Command: MainTitle: Click Assign to begin Deployment" >> $DNLOG
   echo "Command: MainText: This process will assign this device and install base software." >> $DNLOG
   echo "Command: Image: /var/tmp/uarts-logo.png" >> $DNLOG
   echo "Command: DeterminateManual: 5" >> $DNLOG
 
-  # Open DepNotify
+  # Open DEPNotify
   sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify &
 
   # Let's caffinate the mac because this can take long
@@ -79,7 +82,7 @@ if pgrep -x "Finder" \
 
   echo "Command: DeterminateManualStep:" >> $DNLOG
   echo "Status: Creating local user account with password as username..." >> $DNLOG
-  /usr/local/jamf/bin/jamf createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
+  $JAMFBIN createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
 
   echo "Command: DeterminateManualStep:" >> $DNLOG
   echo "Status: Assigning and renaming device..." >> $DNLOG

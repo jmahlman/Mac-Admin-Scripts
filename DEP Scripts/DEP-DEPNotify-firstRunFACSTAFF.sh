@@ -83,7 +83,7 @@ $JAMFBIN policy -event enroll-firstRunFACSTAFF
 
 echo "Command: DeterminateManualStep:" >> $DNLOG
 echo "Status: Creating local user account with password as username..." >> $DNLOG
-/usr/local/jamf/bin/jamf createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
+$JAMFBIN createAccount -username $USERNAME -realname $USERNAME -password $USERNAME -admin
 
 echo "Command: DeterminateManualStep:" >> $DNLOG
 echo "Status: Assigning and renaming device..." >> $DNLOG

@@ -7,6 +7,7 @@
 # Purpose: This script will add our dummy receipts (which are called cohorts) based on the room/computer name.
 #
 # Changelog
+# 07/20/19: - Added A815.  Will probably be adding/changing more rooms this summer.
 # 02/02/18:	- Forgot to remove the room.  The date reflects the repeat push ;)
 # 01/31/18:	- Removed a room from labs and the MUSIC function because it's not needed.
 # 10/26/17:	- Added some more suites. Might combine all suites eventually.
@@ -39,7 +40,7 @@ roomNumber=`scutil --get ComputerName | awk 'BEGIN {FS="-"} END {print $1}' | tr
 # Arrays for all of our different types of rooms
 labNumber=(A309 A615 A626 A728 AB9 AM11 T1113 T1212 T1213 T1219 T1223 T1328 T1402 T1421 T1423 T1425 T1506 T802 T907)
 TsmartClass=(T1014 T1049 T1053 T1102 T1106 T1121 T1202 T1703 T202 T511 T602 T604 T608 T702 T704 T706 T710 T712 T714 T716 T806 T831 T833 T902)
-AsmartClass=(AB16)
+AsmartClass=(AB16 A815)
 GsmartClass=(G405 G408 G410 G411 G415 H312)
 StudioT=(T1404 T1408)
 StudioA=(A315 A316 A317 A318 A319 A231 A220 A716 A723 A725 A726)
