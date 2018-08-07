@@ -12,6 +12,7 @@
 #
 # Changelog
 #
+# 8/6/18  - Added a self destruct for the script at the end
 # 7/30/18 - Changed key from RegistrationButtonLabel to RegisterButtonLabel (new version of DEPNotify)
 #         - Missed a jamf binary call somehow
 # 5/8/18	- New Script (same as DEP-DEPNotify-firstRunFACSTAFF but now made into a launchDaemon)
@@ -112,6 +113,8 @@ if pgrep -x "Finder" \
   /usr/bin/touch /var/db/receipts/com.uarts.provisioning.done.bom
   # Remove the Launch Daemon
   /bin/rm -Rf /Library/LaunchDaemons/com.uarts.launch.plist
+  # Remove this script
+  /bin/rm -- "$0"
 
 fi
 exit 0
