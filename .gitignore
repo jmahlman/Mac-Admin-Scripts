@@ -1,2 +1,5 @@
 
 .DS_Store
+install-CHECKOUT-software.sh
+install-OFFICE-software.sh
+install-PUBLIC-software.sh
