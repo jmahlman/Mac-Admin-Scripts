@@ -14,6 +14,7 @@
 #
 # Changelog
 #
+# 8/9/18	-	Fixed some XML issues :)
 # 8/3/18	-	Trying out using policy calls for all software instead of a single policy
 # 7/24/18 - New script based on one by Neil Martin.
 #
@@ -99,34 +100,28 @@ if pgrep -x "Finder" \
 		# Let's read the user data into some variables...
 		computerName=$(/usr/libexec/plistbuddy $DNPLIST -c "print 'Computer Name'" | tr [a-z] [A-Z])
 		cohort=$(/usr/libexec/plistbuddy $DNPLIST -c "print 'Cohort'" | tr [a-z] [A-Z])
-		ASSETTAG=$(/usr/lib exec/plistbuddy $DNPLIST -c "print 'Asset Tag'" | tr [a-z] [A-Z])
-		# Update Computer Name and Cohort in JSS
+		ASSETTAG=$(/usr/libexec/plistbuddy $DNPLIST -c "print 'Asset Tag'" | tr [a-z] [A-Z])
+		# Update Asset Tag, Computer Name, and Cohort in JSS
 
-		cat << EOF > /var/tmp/tempName.xml
-		<computer>
-			<extension_attributes>
-					<extension_attribute>
-						<name>New Computer Name</name>
-						<value>$computerName</value>
-					</extension_attribute>
-			</extension_attributes>
-		</computer>
+		cat << EOF > /var/tmp/tempInfo.xml
+<computer>
+	<general>
+		<asset_tag>$ASSETTAG</asset_tag>
+	</general>
+  <extension_attributes>
+    <extension_attribute>
+			<name>New Cohort</name>
+      <value>$cohort</value>
+		</extension_attribute>
+		<extension_attribute>
+			<name>New Computer Name</name>
+      <value>$computerName</value>
+    </extension_attribute>
+  </extension_attributes>
+</computer>
 EOF
 		## Upload the xml file
-		/usr/bin/curl -sfku "$APIUSER":"$APIPASS" "$JSSURL"JSSResource/computers/serialnumber/"$serial" -H "Content-type: text/xml" -T /var/tmp/tempName.xml -X PUT
-
-		cat << EOF > /var/tmp/tempCohort.xml
-		<computer>
-		  <extension_attributes>
-		      <extension_attribute>
-						<name>New Cohort</name>
-		        <value>$cohort</value>
-		      </extension_attribute>
-		  </extension_attributes>
-		</computer>
-EOF
-		## Upload the xml file
-		/usr/bin/curl -sfku "$APIUSER":"$APIPASS" "$JSSURL"JSSResource/computers/serialnumber/"$serial" -H "Content-type: text/xml" -T /var/tmp/tempCohort.xml -X PUT
+		/usr/bin/curl -sfku "$APIUSER":"$APIPASS" "$JSSURL"JSSResource/computers/serialnumber/"$serial" -H "Content-type: text/xml" -T /var/tmp/tempInfo.xml -X PUT
 	else
 		# This is if the machine is already found on the server
 
