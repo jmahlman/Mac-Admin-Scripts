@@ -7,6 +7,7 @@
 # Purpose: This script will add our dummy receipts (which are called cohorts) based on the room/computer name.
 #
 # Changelog
+# 08/10/18:	-	Added T1215
 # 07/20/19: - Added A815.  Will probably be adding/changing more rooms this summer.
 # 02/02/18:	- Forgot to remove the room.  The date reflects the repeat push ;)
 # 01/31/18:	- Removed a room from labs and the MUSIC function because it's not needed.
@@ -42,7 +43,7 @@ labNumber=(A309 A615 A626 A728 AB9 AM11 T1113 T1212 T1213 T1219 T1223 T1328 T140
 TsmartClass=(T1014 T1049 T1053 T1102 T1106 T1121 T1202 T1703 T202 T511 T602 T604 T608 T702 T704 T706 T710 T712 T714 T716 T806 T831 T833 T902)
 AsmartClass=(AB16 A815)
 GsmartClass=(G405 G408 G410 G411 G415 H312)
-StudioT=(T1404 T1408)
+StudioT=(T1404 T1408 T1215)
 StudioA=(A315 A316 A317 A318 A319 A231 A220 A716 A723 A725 A726)
 suiteVoice=(T612 T614 T616 T618 T620 T700 T709)
 suiteGen=(T1112 T1403 T1405 T1407 T1409 T1410 T1412 T1414 T1415 T1416 T1513) #generic suites
