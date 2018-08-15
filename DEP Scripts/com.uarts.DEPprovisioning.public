@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
@@ -14,8 +14,10 @@
 #
 # Changelog
 #
-# 8/9/18	-	Fixed some XML issues :)
-# 8/3/18	-	Trying out using policy calls for all software instead of a single policy
+# 8/15/18	- Change env to bash from sh which helped fix the echo commands.
+#					- Updated the output to maintext.
+# 8/9/18	- Fixed some XML issues :)
+# 8/3/18	- Trying out using policy calls for all software instead of a single policy
 # 7/24/18 - New script based on one by Neil Martin.
 #
 # Get the JSS URL from the Mac's jamf plist file, we'll use this to check if the machine is already in the jss
@@ -79,7 +81,7 @@ if pgrep -x "Finder" \
 		echo "Command: WindowStyle: NotMovable" >> $DNLOG
 		echo "Command: DeterminateManual: 5" >> $DNLOG
 
-		# Open DepNotify fullscreen reading from the jamf log
+		# Open DepNotify fullscreen
 	  sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify -fullScreen &
 		echo "Command: MainText: Make sure this Mac is plugged into a wired network connection before beginning." >> $DNLOG
 
@@ -101,8 +103,8 @@ if pgrep -x "Finder" \
 		computerName=$(/usr/libexec/plistbuddy $DNPLIST -c "print 'Computer Name'" | tr [a-z] [A-Z])
 		cohort=$(/usr/libexec/plistbuddy $DNPLIST -c "print 'Cohort'" | tr [a-z] [A-Z])
 		ASSETTAG=$(/usr/libexec/plistbuddy $DNPLIST -c "print 'Asset Tag'" | tr [a-z] [A-Z])
-		# Update Asset Tag, Computer Name, and Cohort in JSS
 
+		# Update Asset Tag, Computer Name, and Cohort in JSS
 		cat << EOF > /var/tmp/tempInfo.xml
 <computer>
 	<general>
@@ -137,9 +139,11 @@ EOF
 		sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify -fullScreen &
 
 		if [[ $cohort == "CHECKOUT" ]] || [[ $cohort == "OFFICE" ]]; then
-			echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished."  >> $DNLOG
+			echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished. \
+			\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		else
-			echo "Command: MainText: This may take a few hours. We'll restart automatically when we're finished."  >> $DNLOG
+			echo "Command: MainText: This may take a few hours. We'll restart automatically when we're finished. \
+			\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		fi
 		echo "Status: Please wait..." >> $DNLOG
 	fi
@@ -156,15 +160,18 @@ EOF
 	echo "Status: Running FirstRun scripts and installing packages..." >> $DNLOG
 	echo "Command: DeterminateManualStep:" >> $DNLOG
 	if [[ $cohort == "CHECKOUT" ]]; then
-		echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished."  >> $DNLOG
+		echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished. \
+		\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		$JAMFBIN policy -event install-CHECKOUT-software
 		$JAMFBIN policy -event enroll-firstRunCHECKOUT-scripts
 	elif [[ $cohort == "OFFICE" ]]; then
-		echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished."  >> $DNLOG
+		echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished. \
+		\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		$JAMFBIN policy -event install-OFFICE-software
 		$JAMFBIN policy -event enroll-firstRunOFFICE-scripts
 	else
-		echo "Command: MainText: This may take a few hours. We'll restart automatically when we're finished."  >> $DNLOG
+		echo "Command: MainText: This may take a few hours. We'll restart automatically when we're finished. \
+		\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		$JAMFBIN policy -event install-PUBLIC-software
 		$JAMFBIN policy -event enroll-firstRunPUBLIC-scripts
 	fi

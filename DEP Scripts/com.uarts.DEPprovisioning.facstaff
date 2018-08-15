@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
@@ -12,6 +12,7 @@
 #
 # Changelog
 #
+# 8/15/18	- Change env to bash from sh.
 # 8/6/18  - Added a self destruct for the script at the end
 # 7/30/18 - Changed key from RegistrationButtonLabel to RegisterButtonLabel (new version of DEPNotify)
 #         - Missed a jamf binary call somehow
