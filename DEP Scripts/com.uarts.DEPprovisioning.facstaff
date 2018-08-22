@@ -12,18 +12,27 @@
 #
 # Changelog
 #
+# 8/16/18 - Added a check for the receipt to help with "accidental" re-enrollments
 # 8/15/18	- Change env to bash from sh.
 # 8/6/18  - Added a self destruct for the script at the end
 # 7/30/18 - Changed key from RegistrationButtonLabel to RegisterButtonLabel (new version of DEPNotify)
 #         - Missed a jamf binary call somehow
 # 5/8/18	- New Script (same as DEP-DEPNotify-firstRunFACSTAFF but now made into a launchDaemon)
 #
+JAMFBIN=/usr/local/bin/jamf
 # Get the logged in user
 CURRENTUSER=$(/usr/bin/python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
 # Setup Done File
 setupDone="/var/db/receipts/com.uarts.provisioning.done.bom"
-
-JAMFBIN=/usr/local/jamf/bin/jamf
+# If the receipt is found, DEP already ran so let's remove this script and
+# the launch Daemon. This helps if someone re-enrolls a machine for some reason.
+if [ -f "${setupDone}" ]; then
+	# Remove the Launch Daemon
+	/bin/rm -Rf /Library/LaunchDaemons/com.uarts.launch.plist
+	# Remove this script
+	/bin/rm -- "$0"
+	exit 0
+fi
 
 if pgrep -x "Finder" \
 && pgrep -x "Dock" \

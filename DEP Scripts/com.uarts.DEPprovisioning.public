@@ -14,6 +14,7 @@
 #
 # Changelog
 #
+# 8/16/18 - Added a check for the receipt to help with "accidental" re-enrollments
 # 8/15/18	- Change env to bash from sh which helped fix the echo commands.
 #					- Updated the output to maintext.
 # 8/9/18	- Fixed some XML issues :)
@@ -43,6 +44,16 @@ JAMFBIN=/usr/local/bin/jamf
 CURRENTUSER=$(/usr/bin/python -c 'from SystemConfiguration import SCDynamicStoreCopyConsoleUser; import sys; username = (SCDynamicStoreCopyConsoleUser(None, None, None) or [None])[0]; username = [username,""][username in [u"loginwindow", None, u""]]; sys.stdout.write(username + "\n");')
 # Setup Done File
 setupDone="/var/db/receipts/com.uarts.provisioning.done.bom"
+
+# If the receipt is found, DEP already ran so let's remove this script and
+# the launch Daemon. This helps if someone re-enrolls a machine for some reason.
+if [ -f "${setupDone}" ]; then
+	# Remove the Launch Daemon
+	/bin/rm -Rf /Library/LaunchDaemons/com.uarts.launch.plist
+	# Remove this script
+	/bin/rm -- "$0"
+	exit 0
+fi
 
 # This is where we wait until a user is completely logged in
 if pgrep -x "Finder" \
@@ -139,11 +150,13 @@ EOF
 		sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify -fullScreen &
 
 		if [[ $cohort == "CHECKOUT" ]] || [[ $cohort == "OFFICE" ]]; then
-			echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished. \
-			\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
+			echo "Command: MainText: This mac is installing all nessecary software and running some installation scripts.  \
+Please do not interrupt this process. This may take a little while to complete; the machine restart \
+automatically when it's finished. \n Cohort: $cohort \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		else
-			echo "Command: MainText: This may take a few hours. We'll restart automatically when we're finished. \
-			\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
+			echo "Command: MainText: This mac is installing all nessecary software and running some installation scripts.  \
+Please do not interrupt this process. This will take a few hours to complete; the machine restart \
+automatically when it's finished. \n Cohort: $cohort \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		fi
 		echo "Status: Please wait..." >> $DNLOG
 	fi
@@ -153,25 +166,28 @@ EOF
 
 	# Rename the machine
 	echo "Command: DeterminateManualStep:" >> $DNLOG
-	echo "Command: MainTitle: Setting things up..."  >> $DNLOG
+	echo "Command: MainTitle: $computerName"  >> $DNLOG
 	echo "Status: Setting computer name..." >> $DNLOG
 	$JAMFBIN setComputerName -name "${computerName}"
 
 	echo "Status: Running FirstRun scripts and installing packages..." >> $DNLOG
 	echo "Command: DeterminateManualStep:" >> $DNLOG
 	if [[ $cohort == "CHECKOUT" ]]; then
-		echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished. \
-		\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
+		echo "Command: MainText: This mac is installing all nessecary software and running some installation scripts.  \
+Please do not interrupt this process. This may take a little while to complete; the machine restart \
+automatically when it's finished. \n \n Cohort: $cohort \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		$JAMFBIN policy -event install-CHECKOUT-software
 		$JAMFBIN policy -event enroll-firstRunCHECKOUT-scripts
 	elif [[ $cohort == "OFFICE" ]]; then
-		echo "Command: MainText: This may take a little while. We'll restart automatically when we're finished. \
-		\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
+		echo "Command: MainText: This mac is installing all nessecary software and running some installation scripts.  \
+Please do not interrupt this process. This may take a little while to complete; the machine restart \
+automatically when it's finished. \n \n Cohort: $cohort \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		$JAMFBIN policy -event install-OFFICE-software
 		$JAMFBIN policy -event enroll-firstRunOFFICE-scripts
 	else
-		echo "Command: MainText: This may take a few hours. We'll restart automatically when we're finished. \
-		\n \n Cohort: $cohort \n \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
+		echo "Command: MainText: This mac is installing all nessecary software and running some installation scripts.  \
+Please do not interrupt this process. This may take a few hours to complete; the machine restart \
+automatically when it's finished. \n \n Cohort: $cohort \n \n macOS Version: $OSVERSION"  >> $DNLOG
 		$JAMFBIN policy -event install-PUBLIC-software
 		$JAMFBIN policy -event enroll-firstRunPUBLIC-scripts
 	fi
