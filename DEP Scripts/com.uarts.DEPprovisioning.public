@@ -14,6 +14,8 @@
 #
 # Changelog
 #
+# 8/24/18	- Removed an entire section of "MainText" because it was redundant.
+# 8/23/18	- Moved the caffinate command because it obviously wasn't running if a machine already existed.  Oops. Also added -s in there.
 # 8/16/18 - Added a check for the receipt to help with "accidental" re-enrollments
 # 8/15/18	- Change env to bash from sh which helped fix the echo commands.
 #					- Updated the output to maintext.
@@ -61,6 +63,10 @@ if pgrep -x "Finder" \
 && [ "$CURRENTUSER" != "_mbsetupuser" ] \
 && [ ! -f "${setupDone}" ]; then
 
+	# Let's caffinate the mac because this can take long
+	/usr/bin/caffeinate -d -i -m -u -s &
+	caffeinatepid=$!
+
 	# Kill any installer process running
 	killall Installer
 	# Wait a few seconds
@@ -95,10 +101,6 @@ if pgrep -x "Finder" \
 		# Open DepNotify fullscreen
 	  sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify -fullScreen &
 		echo "Command: MainText: Make sure this Mac is plugged into a wired network connection before beginning." >> $DNLOG
-
-	  # Let's caffinate the mac because this can take long
-	  /usr/bin/caffeinate -d -i -m -u &
-	  caffeinatepid=$!
 
 	  # get user input...
 	  echo "Command: ContinueButtonRegister: Begin" >> $DNLOG
@@ -148,16 +150,6 @@ EOF
 		echo "Command: WindowStyle: NotMovable" >> $DNLOG
 		echo "Command: DeterminateManual: 5" >> $DNLOG
 		sudo -u "$CURRENTUSER" /var/tmp/DEPNotify.app/Contents/MacOS/DEPNotify -fullScreen &
-
-		if [[ $cohort == "CHECKOUT" ]] || [[ $cohort == "OFFICE" ]]; then
-			echo "Command: MainText: This mac is installing all nessecary software and running some installation scripts.  \
-Please do not interrupt this process. This may take a little while to complete; the machine restart \
-automatically when it's finished. \n Cohort: $cohort \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
-		else
-			echo "Command: MainText: This mac is installing all nessecary software and running some installation scripts.  \
-Please do not interrupt this process. This will take a few hours to complete; the machine restart \
-automatically when it's finished. \n Cohort: $cohort \n Computer Name: $computerName \n \n macOS Version: $OSVERSION"  >> $DNLOG
-		fi
 		echo "Status: Please wait..." >> $DNLOG
 	fi
 
