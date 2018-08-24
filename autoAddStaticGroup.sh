@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 #
 # Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
@@ -8,6 +8,8 @@
 # Note: If your group names have spaces you have to use '%20' in their place.
 #
 # Changelog
+# 8/24/18 	- Updated all room arrays.
+# 					- Changed env to bash
 # 10/25/17:	- Updated rooms and cleaned up naming.
 #						- Fixed header to conform with my other scripts
 # 					- Added StudioA2 array (new studios)
@@ -47,16 +49,16 @@ building=`scutil --get ComputerName | cut -c -1 | tr "[a-z]" "[A-Z]"`
 machType=`scutil --get ComputerName | awk 'BEGIN {FS="-"} END {print $3}' | cut -c -1 | tr "[a-z]" "[A-Z]"`
 
 # Arrays for all of our different types of rooms
-labNumber=(A309 A615 A626 A728 AB9 AM11 M209 M707 T1113 T1212 T1213 T1219 T1223 T1328 T1402 T1421 T1423 T1425 T1506 T802 T907)
+labNumber=(A309 A615 A626 A728 AM11 T1113 T1213 T1219 T1223 T1328 T1421 T1423 T1425 T1506 T802 T907)
 TsmartClass=(T1014 T1049 T1053 T1102 T1106 T1121 T1202 T1703 T202 T511 T602 T604 T608 T702 T704 T706 T710 T712 T714 T716 T806 T831 T833 T902)
-AsmartClass=(AB16)
-GsmartClass=(G405 G408 G410 G411 G415 H312)
-StudioA3=(A315 A316 A317 A318 A319)
-StudioA2=(A231 A220)
-StudioA7=(A716 A723 A725 A726)
-suiteVoice=( T612 T614 T616 T618 T620 T700 T709)
+AsmartClass=(A212 A815)
+GsmartClass=(G404 G405 G408 G410 G411 G415 H312)
+StudioT=(T1219 T1215 T1404 T1408 T1421 T1425 T1504 T510 T512 T514 T518)
+StudioA=(A200 A315 A316 A317 A318 A319 A320 A231 A220 A716 A723 A725 A726)
+suiteVoice=(T612 T614 T616 T618 T620 T608 T709)
+suiteGen=(T1403 T1405 T1407 T1409 T1410 T1412 T1414 T1415 T1416 T1513) #generic suites
 suiteDragon=(T1403 T1405 T1407 T1409)
-suiteDragonUM=(T1421A T1421B T1425B T1425C)
+suiteDragonUM=(T1425B T1425C)
 editBay=(T1108 T1109 T1111 T1114 T1115 T1116 T1117 T1118 T1119)
 
 # Public Computers: Check the first part of the computer name against the labNumber array
