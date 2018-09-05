@@ -37,7 +37,7 @@ roomNumber=`scutil --get ComputerName | awk 'BEGIN {FS="-"} END {print $1}' | tr
 
 # AppGroup room assignment
 AppGroupVoice=(T608 T612 T614 T616 T618 T620 T700 T709)
-AppGroupAnimation=(T1403 T1405 T1407 T1409 T1412 T1414 T1415 T1416 T1421 T1423 T1425 T1425C)
+AppGroupAnimation=(T1403 T1405 T1407 T1409 T1412 T1414 T1415 T1416 T1421 T1423 T1425 T1425C T1425B)
 AppGroupPhoto=(T1506 T1513 T1504 T1402)
 
 ############
