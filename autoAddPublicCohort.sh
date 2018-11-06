@@ -7,7 +7,7 @@
 # Purpose: This script will add our dummy receipts (which are called cohorts) based on the room/computer name.
 #
 # Changelog
-# 11/2/18 	- Updated suites in Terra array.
+# 11/6/18 	-	Fixing arrays...again.
 # 8/24/18 	- Updated all room arrays.
 # 					- Changed env to bash
 # 8/23/18		- Adding a generic public cohort if no appropriate room is found.
@@ -47,7 +47,7 @@ labNumber=(A231 A309 A615 A626 A728 AM11 T1113 T1213 T1223 T1328 T1423 T1429 T15
 TsmartClass=(T1014 T1028 T1049 T1053 T1703 T202 T511 T513 T602 T604 T606 T702 T704 T706 T710 T712 T714 T716 T806 T831 T833 T902)
 AsmartClass=(A212 A815)
 GsmartClass=(G404 G405 G408 G410 G411 G415 H312)
-StudioT=(T1210 T1212 T1214 T1216 T1218 T1219 T1220 T1215 T1404 T1408 T1420 T1422 T1421 T1425 T1504 T1513 T510 T512 T514 T518)
+StudioT=(T1219 T1220 T1215 T1404 T1408 T1421 T1425 T1504 T1513 T510 T512 T514 T518)
 StudioA=(A200 A315 A316 A317 A318 A319 A320 A220 A716 A723 A725 A726)
 suiteVoice=(T612 T614 T616 T618 T620 T608 T709)
 suiteGen=(T1403 T1405 T1407 T1409 T1410 T1412 T1414 T1415) #generic suites
