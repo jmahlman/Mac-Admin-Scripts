@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/zsh
 #
 #
-# Created by John Mahlman, University of the Arts Philadelphia (jmahlman@uarts.edu)
+# Created by John Mahlman
 # Name: Adobe-RUMWithProgress-jamfhelper
 #
 # Purpose: This script uses jamfhelper to show which updates are available for Adobe CC and asks
@@ -9,9 +9,10 @@
 #
 # Changelog
 #
+# 1/12/21 - Add new product, RUSH
 # 5/3/18  - Just adding "Uarts" to the window title.
 # 4/25/18	-	Thanks for user remyb we've decided to move to using jamfhelper instead of cocoadialog. Instead of
-#						updating the old script, I'm just going to create this new one so non-jamf people can still use the other.
+#					updating the old script, I'm just going to create this new one so non-jamf people can still use the other.
 # 4/25/18 - Changed all CocoaDialog stuff to jamfHelper - remyb (Thanks!)
 # 2/22/18 - Cleaned up some logic to make it prettier
 # 1/8/18  - Updated channel ID list with new channels and names
@@ -27,11 +28,11 @@
 #
 
 icons=/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources
-rumlog=/var/tmp/RUMupdate.log # mmmmmm, rum log
+rumlog=/Library/Application\ Support/Leidos/CIO\ Services/AdobeRUMUpdatesLog.log # mmmmmm, rum log
 jamfHelper="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
-oldRUM=/usr/sbin/RemoteUpdateManager # this is where RUM used to live pre-10.11
-rum=/usr/local/bin/RemoteUpdateManager # post-10.11
+rum=/usr/local/bin/RemoteUpdateManager
 jamf_bin=/usr/local/bin/jamf
+installRUM="${4}" #set RUM install trigger
 
 # Installer function
 installUpdates ()
@@ -40,8 +41,8 @@ installUpdates ()
     caffeinate -d -i -m -u &
     caffeinatepid=$!
 
-    # Displaying jamfHelper
-    "$jamfHelper" -windowType hud -title "UArts Adobe Updater" -description "Downloading and Installing Updates, this may take some time..." \
+    # Displaying jamfHelper update "progress"
+    "$jamfHelper" -windowType hud -title "Leidos Adobe Updater" -description "Downloading and Installing Updates, this may take some time..." \
     -icon "$icons/Sync.icns" -lockHUD > /dev/null 2>&1 &
 
     # do all of your work here
@@ -61,35 +62,28 @@ installUpdates ()
 #  Script   #
 #############
 
-
-# old RUM installed?
-if [ -f $oldRUM ] ; then
-    rm -rf $oldRUM
-fi
-
-# new/current RUM installed?
-if [ ! -f $rum ] ; then
+# RUM installed? Lets install if not.
+if [[ ! -f $rum ]] ; then
 	echo "Installing RUM from JSS"
-	$jamf_bin policy -event installRUM
-	if [ ! -f $rum ] ; then
+	$jamf_bin policy -event $installRUM
+	if [[ ! -f $rum ]] ; then
 		echo "Couldn't install RUM! Exiting."
 		exit 1
 	fi
 fi
 
 # Not that it matters but we'll remove the old log file if it exists
-if [ -f $rumlog ] ; then
-    rm $rumlog
+if [[ -f "$rumlog" ]] ; then
+    rm "$rumlog"
 fi
 
 #run RUM and output to the log file
-touch $rumlog
-$rum --action=list > $rumlog
+touch "$rumlog"
+$rum --action=list > "$rumlog"
 
 # super-echo!  Echo pretty-ish output to user. Replaces Adobes channel IDs with actual app names
-# I think it's silly that I have to do this, but whatever. :)
 # Adobe channel ID list: https://helpx.adobe.com/enterprise/package/help/apps-deployed-without-their-base-versions.html
-secho=`sed -n '/Following*/,/\*/p' $rumlog \
+secho=`sed -n '/Following*/,/\*/p' "$rumlog" \
     | sed 's/Following/The\ Following/g' \
     | sed 's/ACR/Acrobat/g' \
     | sed 's/AEFT/After\ Effects/g' \
@@ -108,23 +102,31 @@ secho=`sed -n '/Following*/,/\*/p' $rumlog \
     | sed 's/IDSN/InDesign/g' \
     | sed 's/PPRO/Premiere\ Pro/g' \
     | sed 's/LTRM/Lightroom\ Classic/g' \
+    | sed 's/LRCC/Lightroom/g' \
     | sed 's/CHAR/Character\ Animator/g' \
-    | sed 's/ESHR/Dimension/g' `
+    | sed 's/SBSTA/Substance\ Alchemist/g' \
+    | sed 's/SBSTD/Substance\ Designer/g' \
+    | sed 's/SBSTP/Substance\ Painter/g' \
+    | sed 's/ESHR/Dimension/g' \
+    | sed 's/RUSH/Premiere\ Rush/g' `
 
-if [ "$(grep "Following Updates are applicable" $rumlog)" ] ; then
-  userChoice=$("$jamfHelper" -windowType hud -lockHUD -title "UArts Adobe Updater" \
+if [ "$(grep "Following Updates are applicable" "$rumlog")" ] ; then
+  userChoice=$("$jamfHelper" -windowType hud -lockHUD -title "Leidos Adobe Updater" \
   -icon "$icons/ToolbarInfo.icns" -description "Do you want to install these updates?
 
 $secho" -button1 "Yes" -button2 "No")
-    if [ "$userChoice" == "0" ]; then
+    if [[ "$userChoice" == "0" ]]; then
         echo "User said yes, installing $secho"
         installUpdates
-    elif [ "$userChoice" == "2" ]; then
+        # Lets show an alert that updates are done
+        "$jamfHelper" -windowType hud -title "Leidos Adobe Updater" -description "Update installation complete." \
+        -icon "$icons/ToolbarInfo.icns" -button1 Ok -defaultButton 1
+    elif [[ "$userChoice" == "2" ]]; then
         echo "User said no"
         exit 0
     fi
 else
-    "$jamfHelper" -windowType hud -title "UArts Adobe Updater" -description "There are no Adobe Updates available." \
+    "$jamfHelper" -windowType hud -title "Leidos Adobe Updater" -description "There are no Adobe Updates available." \
     -icon "$icons/ToolbarInfo.icns" -button1 Ok -defaultButton 1
     exit 0
 fi
