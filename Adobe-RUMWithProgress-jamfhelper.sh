@@ -9,6 +9,7 @@
 #
 # Changelog
 #
+# 8/17/21 - Fixed ChannelID ACR (issue #2) and re-adjusted the egrep for update checking (issue #1).
 # 1/12/21 - Add new product; RUSH and generalize wording.
 # 5/3/18  - Just adding "Uarts" to the window title.
 # 4/25/18	-	Thanks for user remyb we've decided to move to using jamfhelper instead of cocoadialog. Instead of
@@ -85,7 +86,7 @@ $rum --action=list > "$rumlog"
 # Adobe channel ID list: https://helpx.adobe.com/enterprise/package/help/apps-deployed-without-their-base-versions.html
 secho=`sed -n '/Following*/,/\*/p' "$rumlog" \
     | sed 's/Following/The\ Following/g' \
-    | sed 's/ACR/Acrobat/g' \
+    | sed 's/ACR/Camera\ Raw/g' \
     | sed 's/AEFT/After\ Effects/g' \
     | sed 's/AME/Media\ Encoder/g' \
     | sed 's/AUDT/Audition/g' \
@@ -110,7 +111,7 @@ secho=`sed -n '/Following*/,/\*/p' "$rumlog" \
     | sed 's/ESHR/Dimension/g' \
     | sed 's/RUSH/Premiere\ Rush/g' `
 
-if [ "$(grep "Following Updates are applicable" "$rumlog")" ] ; then
+if [ "$(grep -i "updates are applicable on the system" "$rumlog")" ] ; then
   userChoice=$("$jamfHelper" -windowType hud -lockHUD -title "Adobe Updater" \
   -icon "$icons/ToolbarInfo.icns" -description "Do you want to install these updates?
 
