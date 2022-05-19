@@ -9,6 +9,8 @@ SCRIPTVER="1.10.1"
 
 # Purpose: This script will be used to show a user the progress of large installs using DEPNotify and Jamf policies.
 #
+#   Special thanks to Graham Pugh's erase-install script for providing me with the inspiration 
+#   and some of the frameworks of this script! Link: https://github.com/grahampugh/erase-install
 #
 # Author: John Mahlman <john.mahlman@gmail.com>
 # Creation Date: May 10, 2022
