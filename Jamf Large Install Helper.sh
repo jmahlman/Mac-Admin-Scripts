@@ -5,7 +5,7 @@
 SCRIPT_AUTHOR="John Mahlman"
 SCRIPT_AUTHOR_EMAIL="john.mahlman@gmail.com"
 SCRIPT_NAME="large-app-install-helper"
-SCRIPTVER="1.10.1"
+SCRIPTVER="1.10.2"
 
 # Purpose: This script will be used to show a user the progress of large installs using DEPNotify and Jamf policies.
 #
@@ -14,6 +14,10 @@ SCRIPTVER="1.10.1"
 #
 # Author: John Mahlman <john.mahlman@gmail.com>
 # Creation Date: May 10, 2022
+#
+# v1.10.2
+# 2022-05-24 - John Mahlman
+# Adding a recon to the end of the script if it runs successfully.
 #
 # v1.10.1
 # 2022-05-19 - John Mahlman
@@ -361,3 +365,6 @@ else
     depNotifyProgress install
     cleanupWaitingRoom
 fi
+
+# Let's get a recon only if the script completes here.
+$JAMFBINARY recon
