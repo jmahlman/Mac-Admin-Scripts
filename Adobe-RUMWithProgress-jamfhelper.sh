@@ -1,4 +1,5 @@
 #!/bin/zsh
+# shellcheck shell=bash
 #
 #
 # Created by John Mahlman
@@ -9,11 +10,12 @@
 #
 # Changelog
 #
+# 10/18/22 - Fixing issue #3 and other code-y bits.
 # 8/17/21 - Fixed ChannelID ACR (issue #2) and re-adjusted the egrep for update checking (issue #1).
 # 1/12/21 - Add new product; RUSH and generalize wording.
 # 5/3/18  - Just adding "Uarts" to the window title.
 # 4/25/18	-	Thanks for user remyb we've decided to move to using jamfhelper instead of cocoadialog. Instead of
-#						updating the old script, I'm just going to create this new one so non-jamf people can still use the other.
+#				updating the old script, I'm just going to create this new one so non-jamf people can still use the other.
 # 4/25/18 - Changed all CocoaDialog stuff to jamfHelper - remyb (Thanks!)
 # 2/22/18 - Cleaned up some logic to make it prettier
 # 1/8/18  - Updated channel ID list with new channels and names
@@ -28,11 +30,12 @@
 # 2/21/17 - Cleaned up script to make it in line with my styling.
 #
 
-icons=/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources
-rumlog=/Library/Application\ Support/CustomAdobeUpdater/AdobeRUMUpdatesLog.log # mmmmmm, rum log
+icons="/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources"
+logPath="/Library/Application Support/CustomAdobeUpdater/"
+rumlog="$logPath/AdobeRUMUpdatesLog.log" # mmmmmm, rum log
 jamfHelper="/Library/Application Support/JAMF/bin/jamfHelper.app/Contents/MacOS/jamfHelper"
-rum=/usr/local/bin/RemoteUpdateManager
-jamf_bin=/usr/local/bin/jamf
+rum="/usr/local/bin/RemoteUpdateManager"
+jamf_bin="/usr/local/bin/jamf"
 installRUM="${4}" #set RUM install trigger
 
 # Installer function
@@ -41,23 +44,32 @@ installUpdates ()
     # Let's caffinate the mac because this can take long
     caffeinate -d -i -m -u &
     caffeinatepid=$!
-
     # Displaying jamfHelper update "progress"
     "$jamfHelper" -windowType hud -title "Adobe Updater" -description "Downloading and Installing Updates, this may take some time..." \
     -icon "$icons/Sync.icns" -lockHUD > /dev/null 2>&1 &
-
     # do all of your work here
     $rum --action=install
-
     # Kill jamfhelper
     killall jamfHelper > /dev/null 2>&1
-
     # No more caffeine please. I've a headache.
     kill "$caffeinatepid"
-
     exit 0
 }
 
+configureLog ()
+{
+    # fucntion to set up the log file
+    if [[ ! -d "$logPath" ]]; then
+        mkdir -p "$logPath"
+    else
+        # if the dir exists, lets clear the old log
+        if [[ -f "$rumlog" ]] ; then
+            rm "$rumlog"
+        fi
+    fi
+    # Re/create a fresh log file
+    touch "$rumlog"
+}
 
 #############
 #  Script   #
@@ -66,25 +78,19 @@ installUpdates ()
 # RUM installed? Lets install if not.
 if [[ ! -f $rum ]] ; then
 	echo "Installing RUM from JSS"
-	$jamf_bin policy -event $installRUM
+	$jamf_bin policy -event "$installRUM"
 	if [[ ! -f $rum ]] ; then
 		echo "Couldn't install RUM! Exiting."
 		exit 1
 	fi
 fi
 
-# Not that it matters but we'll remove the old log file if it exists
-if [[ -f "$rumlog" ]] ; then
-    rm "$rumlog"
-fi
-
-#run RUM and output to the log file
-touch "$rumlog"
+configureLog
 $rum --action=list > "$rumlog"
 
 # super-echo!  Echo pretty-ish output to user. Replaces Adobes channel IDs with actual app names
 # Adobe channel ID list: https://helpx.adobe.com/enterprise/package/help/apps-deployed-without-their-base-versions.html
-secho=`sed -n '/Following*/,/\*/p' "$rumlog" \
+secho=$(sed -n '/Following*/,/\*/p' "$rumlog" \
     | sed 's/Following/The\ Following/g' \
     | sed 's/ACR/Camera\ Raw/g' \
     | sed 's/AEFT/After\ Effects/g' \
@@ -109,7 +115,7 @@ secho=`sed -n '/Following*/,/\*/p' "$rumlog" \
     | sed 's/SBSTD/Substance\ Designer/g' \
     | sed 's/SBSTP/Substance\ Painter/g' \
     | sed 's/ESHR/Dimension/g' \
-    | sed 's/RUSH/Premiere\ Rush/g' `
+    | sed 's/RUSH/Premiere\ Rush/g' )
 
 if [ "$(grep -i "updates are applicable on the system" "$rumlog")" ] ; then
   userChoice=$("$jamfHelper" -windowType hud -lockHUD -title "Adobe Updater" \
