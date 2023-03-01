@@ -5,21 +5,24 @@
 SCRIPT_AUTHOR="John Mahlman"
 SCRIPT_AUTHOR_EMAIL="john.mahlman@gmail.com"
 SCRIPT_NAME="large-app-install-helper"
-SCRIPTVER="1.10.2"
+SCRIPTVER="1.10.8"
 
-# Purpose: This script will be used to show a user the progress of large installs using DEPNotify and Jamf policies.
+# Purpose: This script will be used to show a user the progress of large installs using DEPNotify
 #
-#   Special thanks to Graham Pugh's erase-install script for providing me with the inspiration 
-#   and some of the frameworks of this script! Link: https://github.com/grahampugh/erase-install
 #
 # Author: John Mahlman <john.mahlman@gmail.com>
 # Creation Date: May 10, 2022
 #
-# v1.10.2
-# 2022-05-24 - John Mahlman
-# Adding a recon to the end of the script if it runs successfully.
+# v1.10.8
+# 2023-02-28 - John Mahlman
+# With the removal of the jamf "install" verb I created the installApp function to use installer instead. I had to make a few other changes to make this work.
+# I also removed the "ability" to kill the installation process since installer does not like doing that
 #
-# v1.10.1
+# v1.10.4
+# 2022-05-19 - John Mahlman
+# Adding a status message at satrtup so we dont show any old messages.
+#
+# v1.10.3
 # 2022-05-19 - John Mahlman
 # Added some better error checking for a failed package install.
 # Added a popup for a failed download or a failed install (instead of just quitting).
@@ -84,12 +87,12 @@ DN_CONFIRMATION="/var/tmp/com.depnotify.provisioning.done"
 DNPLIST="/Users/$CURRENT_USER/Library/Preferences/menu.nomad.DEPNotify.plist"
 
 # DEPNotify UI Elements and text
+IT_SUPPORT="IT Support"
 DOWNLOAD_ICON="/System/Library/CoreServices/CoreTypes.bundle/Contents/Resources/SidebarDownloadsFolder.icns"
 INSTALL_ICON="/System/Library/CoreServices/Installer.app/Contents/Resources/package.icns"
 DN_TITLE="$APPNAME Install Helper"
 DOWNLOAD_DESC="Your machine is currently downloading $APPNAME. This process will take a long time, please be patient.\n\nIf you want to cancel this process press CMD+CTRL+C."
-INSTALL_DESC="Your machine is now installing $APPNAME. This process may take a while, please be patient.\n\nIf you want to cancel this process press CMD+CTRL+C."
-IT_SUPPORT="IT Support"
+INSTALL_DESC="Your machine is now installing $APPNAME. This process may take a while, please be patient.\n\no not cancel the installation, if you have any issues please contact $IT_SUPPORT"
 
 # shellcheck disable=SC2012
 CURRENT_PKG_SIZE=$(ls -l "$JAMF_WAITING_ROOM/$PKG_NAME" | awk '{ print $5 }' | awk '{$1/=1024;printf "%.i\n",$1}')
@@ -143,6 +146,7 @@ dep_notify() {
         echo "Command: Image: $DOWNLOAD_ICON"
         echo "Command: MainTitle: $DN_TITLE"
         /bin/echo "Command: MainText: $DOWNLOAD_DESC"
+        echo "Status: Starting up..."
         echo "Command: QuitKey: c"
     } >> "$DNLOG"
     
@@ -209,20 +213,19 @@ depNotifyProgress() {
             echo "Command: Image: $INSTALL_ICON"
             /bin/echo "Command: MainText: $INSTALL_DESC"
             echo "Status: Preparing to Install $PKG_NAME"
+            echo "Command: QuitKey: i"
             echo "Command: DeterminateManual: 100"
         } >> $DNLOG
-        until grep -q "progress status" "$LOG_FILE" ; do
+        until grep -q "installer:STATUS:" "$LOG_FILE" ; do
+            didInstallFail
+            userCancelProcess
             sleep 2
         done
         # Update the progress using a timer until it's at 100%
         until [[ "$current_progress_value" -ge "100" ]]; do
             until [ "$current_progress_value" -gt "$last_progress_value" ]; do
                 INSTALL_STATUS=$(sed -nE 's/installer:PHASE:(.*)/\1/p' < $LOG_FILE | tail -n 1)
-                INSTALL_FAILED=$(sed -nE 's/installer:(.*)/\1/p' < $LOG_FILE | tail -n 1 | grep -c "The Installer encountered an error")
-                if [[ $INSTALL_FAILED -ge "1" ]]; then
-                    echo "Install failed, notifying user."
-                    echo "Command: Quit: $INSTALL_ERROR" >> $DNLOG 
-                fi
+                didInstallFail
                 userCancelProcess
                 current_progress_value=$(sed -nE 's/installer:%([0-9]*).*/\1/p' < $LOG_FILE | tail -n 1)
                 sleep 2
@@ -277,10 +280,17 @@ cachePackageWithJamf() {
     echo "Jamf policy running with a PID of $JAMF_PID"
 }
 
-installWithJamf() {
+installWithJamf() { # the jamf verb "install" was removed in 10.44, moving to the installApp() function below.
     $JAMFBINARY install -path "$JAMF_WAITING_ROOM" -package "$PKG_NAME" -showProgress -target / 2>&1 | tee $LOG_FILE &
     JAMF_PID=$!
     echo "Jamf install running with a PID of $JAMF_PID"
+}
+
+installApp() {
+    #/usr/sbin/installer -pkg "$JAMF_WAITING_ROOM/$PKG_NAME" -verboseR -target / 2>&1 | tee $LOG_FILE &
+    /usr/sbin/installer -pkg "$JAMF_WAITING_ROOM/$PKG_NAME" -verboseR -target / > >(tee $LOG_FILE) 2>&1 &
+    INSTALLER_PID=$!
+    echo "Installer running with a PID of $INSTALLER_PID"
 }
 
 cleanupWaitingRoom() {
@@ -289,11 +299,22 @@ cleanupWaitingRoom() {
     rm -f "$JAMF_WAITING_ROOM/$PKG_NAME".cache.xml
 }
 
+didInstallFail() {
+    INSTALL_FAILED=$(sed -nE 's/installer:(.*)/\1/p' < $LOG_FILE | tail -n 1 | grep -c "The Installer encountered an error")
+    if [[ $INSTALL_FAILED -ge "1" ]]; then
+        echo "Install failed, notifying user."
+        echo "Command: Quit: $INSTALL_ERROR" >> $DNLOG 
+    fi
+}
+
 # Checks if DEPNotify is open, if it's not, it'll exit, causing the trap to run
+# It's not a good idea to kill the installer...so the question is...should we even stop installer? Naa
+# Thanks for the sanity check, Armin.
 userCancelProcess () {
     if ! pgrep DEPNotify ; then
-        kill -9 $JAMF_PID
-        killall installer
+        killall jamf
+        #kill -9 "$INSTALLER_PID"
+        #killall installer
         echo "User manually cancelled with the quit key."
         # We don't want to mark this as a failure, so let's exit gracefully.
         exit 0
@@ -332,6 +353,7 @@ finish() {
     kill_process "caffeinate"
     kill_process "jamfHelper"
     dep_notify_quit
+    /bin/rm $DNLOG
 }
 
 ###############
@@ -346,12 +368,13 @@ echo "   [$SCRIPT_NAME] Caffeinating this script (pid=$$)"
 /usr/bin/caffeinate -dimsu -w $$ &
 
 check_free_space
-# Let's first check if the package existis in the downloads and it matches the size...
+# Let's first check if the package exists in the downloads and it matches the size...
 # this avoids us having to run the policy again and causing the sceript to re-download the whole thing again.
 if [[ -e "$JAMF_WAITING_ROOM/$PKG_NAME" ]] && [[ $CURRENT_PKG_SIZE == "$PKG_Size" ]]; then
     echo "Package already download, installing with jamf binary."
     dep_notify
-    installWithJamf
+    #installWithJamf
+    installApp
     depNotifyProgress install
     cleanupWaitingRoom
 else
@@ -361,7 +384,8 @@ else
     sleep 5
     dep_notify_quit
     dep_notify
-    installWithJamf
+    #installWithJamf
+    installApp
     depNotifyProgress install
     cleanupWaitingRoom
 fi
